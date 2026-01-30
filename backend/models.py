@@ -45,8 +45,29 @@ class User(SQLModel, table=True):
 class PatientProfile(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="user.id")
-    age: Optional[int] = None
+    
+    # Basic Demographics
+    age: Optional[str] = None  # Age range like "19-40"
     gender: Optional[str] = None
+    is_pregnant: Optional[bool] = None
+    is_breastfeeding: Optional[bool] = None
+    pin_code: Optional[str] = None
+    
+    # Medical History
+    drug_allergies: Optional[bool] = None
+    allergy_details: Optional[str] = None
+    food_allergies: Optional[bool] = None
+    food_allergy_details: Optional[str] = None
+    medical_conditions: Optional[str] = None  # JSON string of conditions array
+    abha_id: Optional[str] = None
+    current_medicines: Optional[bool] = None
+    current_medicine_details: Optional[str] = None
+    
+    # Profile Completion
+    language: Optional[str] = None
+    consent: Optional[bool] = None
+    profile_complete: bool = Field(default=False)
+    
     user: Optional[User] = Relationship(back_populates="patient_profile")
 
 class DoctorProfile(SQLModel, table=True):

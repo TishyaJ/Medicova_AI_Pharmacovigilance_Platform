@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, Lock, LogIn, Shield, Stethoscope, Pill, UserCheck, Smartphone, ArrowLeft, Send } from 'lucide-react';
 import { toast } from 'sonner';
+import { authAPI } from '@/lib/api';
 
 export const roleCards: { role: UserRole; icon: any; label: string; description: string; color: string }[] = [
     {
@@ -56,9 +57,11 @@ const LoginTab = () => {
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedRole) {
+        if (!selectedRole) return;
+
+        try {
             if (selectedRole === 'patient' && loginMethod === 'otp') {
                 if (!otpSent) return;
                 if (otp.length !== 6) {
@@ -67,8 +70,37 @@ const LoginTab = () => {
                 }
             }
 
-            login(email || `${selectedRole}@medicova.com`, password || 'demo123', selectedRole);
+            // Use real API for login
+            const credentials = {
+                email: email || `${selectedRole}@medicova.com`,
+                password_hash: password || 'demo123'
+            };
+
+            const result = await authAPI.login(credentials);
+
+            // Store user data
+            localStorage.setItem('user', JSON.stringify(result.user));
+            if (result.profile) {
+                localStorage.setItem('profile', JSON.stringify(result.profile));
+            }
+
+            login(result.user.email, result.user.password_hash, result.user.role);
+            toast.success(`Welcome back, ${result.user.full_name}!`);
             navigate(`/${selectedRole}`);
+
+        } catch (error: any) {
+            console.error('Login error:', error);
+
+            if (error.response?.status === 401) {
+                toast.error("Invalid email or password");
+            } else if (error.code === 'ERR_NETWORK' || error.message?.includes('ECONNREFUSED')) {
+                // Fallback to mock login if backend is not available
+                toast.warning("Backend not available. Using mock login for testing.");
+                login(email || `${selectedRole}@medicova.com`, password || 'demo123', selectedRole);
+                navigate(`/${selectedRole}`);
+            } else {
+                toast.error(error.response?.data?.detail || "Login failed");
+            }
         }
     };
 

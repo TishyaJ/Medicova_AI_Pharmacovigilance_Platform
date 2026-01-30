@@ -52,9 +52,7 @@ const AppRoutes = () => {
         path="/patient/*"
         element={
           <ProtectedRoute allowedRoles={['patient']}>
-            <DashboardLayout>
-              <PatientDashboard />
-            </DashboardLayout>
+            <PatientDashboard />
           </ProtectedRoute>
         }
       />
