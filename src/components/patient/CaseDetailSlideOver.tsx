@@ -168,18 +168,40 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                             </Badge>
                         </div>
 
-                        <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border">
-                            <h4 className="font-semibold text-base mb-2">{caseData.symptom}</h4>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <span className="text-muted-foreground">Medicine:</span>
-                                    <p className="font-medium">{caseData.medicine}</p>
-                                </div>
-                                <div>
-                                    <span className="text-muted-foreground">Date Reported:</span>
-                                    <p className="font-medium">{new Date(caseData.date).toLocaleDateString()}</p>
-                                </div>
-                            </div>
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-2 gap-3 mt-4">
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <Phone className="h-4 w-4" />
+                                Call Doctor
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <Video className="h-4 w-4" />
+                                Video Call
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <Upload className="h-4 w-4" />
+                                Upload Evidence
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex items-center gap-2"
+                                size="sm"
+                            >
+                                <Calendar className="h-4 w-4" />
+                                Book Follow-up
+                            </Button>
                         </div>
                     </div>
                 </SheetHeader>
@@ -192,7 +214,7 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                         </h4>
                     </div>
 
-                    <ScrollArea className="h-[150px] p-4">
+                    <ScrollArea className="h-[350px] p-4">
                         <div className="space-y-4">
                             {chatHistory.map((msg) => (
                                 <div
@@ -263,28 +285,6 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                             </div>
                         </div>
                     )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="p-4 border-t bg-slate-50 dark:bg-slate-900">
-                    <div className="grid grid-cols-2 gap-3">
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Phone className="h-4 w-4" />
-                            Call Doctor
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Video className="h-4 w-4" />
-                            Video Call
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Upload className="h-4 w-4" />
-                            Upload Evidence
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            Book Follow-up
-                        </Button>
-                    </div>
                 </div>
             </SheetContent>
         </Sheet>
