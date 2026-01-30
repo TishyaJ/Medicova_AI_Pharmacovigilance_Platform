@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '@/types';
 
 interface AuthContextType {
@@ -18,43 +18,40 @@ export const useAuth = () => {
   return context;
 };
 
-const mockUsers: Record<UserRole, User> = {
-  patient: {
-    id: '1',
-    name: 'John Patient',
-    email: 'patient@medicova.com',
-    role: 'patient',
-  },
-  doctor: {
-    id: '2',
-    name: 'Dr. Sarah Smith',
-    email: 'doctor@medicova.com',
-    role: 'doctor',
-  },
-  pharmacist: {
-    id: '3',
-    name: 'James Pharmacist',
-    email: 'pharmacist@medicova.com',
-    role: 'pharmacist',
-  },
-  admin: {
-    id: '4',
-    name: 'Admin User',
-    email: 'admin@medicova.com',
-    role: 'admin',
-  },
-};
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Failed to parse stored user:', error);
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
+
   const login = (email: string, password: string, role: UserRole) => {
-    // Mock login - in real app would validate credentials
-    setUser(mockUsers[role]);
+    // This is called from LoginTab after successful API login
+    // The actual user data should already be in localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
+      }
+    }
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('profile');
   };
 
   return (

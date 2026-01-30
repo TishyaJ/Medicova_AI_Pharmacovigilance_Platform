@@ -1,10 +1,12 @@
 export type UserRole = 'patient' | 'doctor' | 'pharmacist' | 'admin';
 
 export interface User {
-  id: string;
-  name: string;
+  id: string | number;
+  name?: string;
+  full_name?: string;
   email: string;
   role: UserRole;
+  phone_number?: string;
   avatar?: string;
 }
 

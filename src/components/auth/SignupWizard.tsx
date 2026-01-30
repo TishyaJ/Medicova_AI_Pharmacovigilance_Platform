@@ -98,23 +98,31 @@ const SignupWizard = () => {
 
     const handleRoleSelect = (role: UserRole) => {
         setSelectedRole(role);
-        if (role === 'patient') {
-            setStep(4); // Go to language selection for patients
-        } else {
-            setStep(3); // Go to basic profile for other roles
-        }
+        // All roles go to step 3 for basic details (name, email, password)
+        setStep(3);
     };
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedRole) return;
 
+        // Validate required fields
+        if (!name.trim() || !email.trim() || !password.trim()) {
+            toast.error("Please fill in all required fields (Name, Email, Password)");
+            return;
+        }
+
+        if (!phoneNumber || phoneNumber.length < 10) {
+            toast.error("Please provide a valid phone number");
+            return;
+        }
+
         try {
             const payload = {
                 phone_number: phoneNumber,
                 role: selectedRole,
-                full_name: name,
-                email: email,
+                full_name: name.trim(),
+                email: email.trim(),
                 password_hash: password,
                 // Include profile data for patients
                 ...(selectedRole === 'patient' && { profile_data: profileData })
@@ -134,7 +142,14 @@ const SignupWizard = () => {
             console.error('Signup error:', error);
 
             if (error.response?.status === 400) {
-                toast.error(error.response.data.detail || "Email or phone number already registered");
+                const errorMsg = error.response.data.detail || "Registration failed";
+                if (errorMsg.includes("already registered") || errorMsg.includes("already exists")) {
+                    toast.error("This email or phone number is already registered. Please use different credentials or try logging in.", {
+                        duration: 5000,
+                    });
+                } else {
+                    toast.error(errorMsg);
+                }
             } else if (error.code === 'ERR_NETWORK' || error.message?.includes('ECONNREFUSED')) {
                 // Backend not available - show helpful message
                 toast.error("Backend server is not running. Please start the backend first.", {
@@ -162,7 +177,7 @@ const SignupWizard = () => {
         switch (step) {
             case 1: return otp.length === 6;
             case 2: return selectedRole !== null;
-            case 3: return name && email && password;
+            case 3: return name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
             case 4: return profileData.language !== '';
             case 5: return profileData.consent;
             case 6: return profileData.age !== '';

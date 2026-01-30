@@ -25,6 +25,14 @@ export const authAPI = {
         const response = await api.post('/api/auth/login', credentials);
         return response.data;
     },
+
+    updateProfile: async (userId: number, profileData: any) => {
+        const response = await api.put('/api/auth/profile', {
+            user_id: userId,
+            profile_data: profileData
+        });
+        return response.data;
+    },
 };
 
 // Cases API
@@ -38,6 +46,7 @@ export const casesAPI = {
         medicine_name: string;
         symptoms: string;
         user_id: number;
+        wizard_data?: any;
     }) => {
         const response = await api.post('/api/cases/', caseData);
         return response.data;
@@ -47,6 +56,16 @@ export const casesAPI = {
         const response = await api.put(`/api/cases/${caseId}`, { status });
         return response.data;
     },
+
+    getCaseMessages: async (caseId: string | number) => {
+        const response = await api.get(`/api/cases/${caseId}/messages`);
+        return response.data;
+    },
+
+    sendMessage: async (caseId: string | number, message: { sender_id: number; sender_role: string; content: string }) => {
+        const response = await api.post(`/api/cases/${caseId}/messages`, message);
+        return response.data;
+    }
 };
 
 // User stats API (derived from cases)

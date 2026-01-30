@@ -12,6 +12,7 @@ import DoctorDashboard from "@/pages/doctor/DoctorDashboard";
 import PharmacistDashboard from "@/pages/pharmacist/PharmacistDashboard";
 import AdminDashboard from "@/pages/admin/AdminDashboardNew";
 import NotFound from "./pages/NotFound";
+import DebugUser from "./pages/DebugUser";
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,9 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* Debug Route */}
+      <Route path="/debug" element={<DebugUser />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

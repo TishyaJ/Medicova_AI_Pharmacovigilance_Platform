@@ -109,6 +109,7 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
                 "medical_conditions": json.loads(profile.medical_conditions) if profile.medical_conditions else []
             }
     
+    
     return {
         "user": {
             "id": user.id,
@@ -119,3 +120,83 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
         },
         "profile": profile_data
     }
+
+class ProfileUpdateRequest(BaseModel):
+    user_id: int
+    profile_data: dict
+
+@router.put("/profile/{user_id}")
+def update_profile(user_id: int, profile_data: dict, session: Session = Depends(get_session)):
+    """Update patient profile"""
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.role != UserRole.patient:
+        raise HTTPException(status_code=400, detail="Only patient profiles can be updated via this endpoint")
+    
+    # Get or create patient profile
+    profile = session.exec(select(PatientProfile).where(PatientProfile.user_id == user_id)).first()
+    
+    if not profile:
+        profile = PatientProfile(user_id=user_id)
+        session.add(profile)
+    
+    # Update basic demographics
+    if 'age' in profile_data:
+        profile.age = profile_data['age']
+    if 'gender' in profile_data:
+        profile.gender = profile_data['gender']
+    if 'pin_code' in profile_data:
+        profile.pin_code = profile_data['pin_code']
+    if 'location' in profile_data:
+        profile.location = profile_data['location']
+    if 'is_pregnant' in profile_data:
+        profile.is_pregnant = profile_data['is_pregnant']
+    if 'is_breastfeeding' in profile_data:
+        profile.is_breastfeeding = profile_data['is_breastfeeding']
+    
+    # Update physical attributes
+    if 'blood_group' in profile_data:
+        profile.blood_group = profile_data['blood_group']
+    if 'height' in profile_data:
+        profile.height = profile_data['height']
+    if 'weight' in profile_data:
+        profile.weight = profile_data['weight']
+    
+    # Update medical history
+    if 'abha_id' in profile_data:
+        profile.abha_id = profile_data['abha_id']
+    if 'allergies' in profile_data:
+        # Convert list to JSON string
+        profile.allergies = json.dumps(profile_data['allergies']) if isinstance(profile_data['allergies'], list) else profile_data['allergies']
+    if 'medical_conditions' in profile_data:
+        # Convert list to JSON string
+        profile.medical_conditions = json.dumps(profile_data['medical_conditions']) if isinstance(profile_data['medical_conditions'], list) else profile_data['medical_conditions']
+    if 'current_medicines' in profile_data:
+        profile.current_medicines = profile_data['current_medicines']
+    if 'current_medicine_details' in profile_data:
+        profile.current_medicine_details = profile_data['current_medicine_details']
+    
+    # Update emergency contact
+    if 'emergency_contact_name' in profile_data:
+        profile.emergency_contact_name = profile_data['emergency_contact_name']
+    if 'emergency_contact_relation' in profile_data:
+        profile.emergency_contact_relation = profile_data['emergency_contact_relation']
+    if 'emergency_contact_phone' in profile_data:
+        profile.emergency_contact_phone = profile_data['emergency_contact_phone']
+    
+    # Update language and consent
+    if 'language' in profile_data:
+        profile.language = profile_data['language']
+    if 'consent' in profile_data:
+        profile.consent = profile_data['consent']
+    
+    # Mark profile as complete if key fields are filled
+    if profile.age and profile.gender and profile.pin_code:
+        profile.profile_complete = True
+    
+    session.commit()
+    session.refresh(profile)
+    
+    return {"message": "Profile updated successfully", "profile_complete": profile.profile_complete}

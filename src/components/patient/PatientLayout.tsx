@@ -17,7 +17,11 @@ import {
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 
-const PatientLayout = () => {
+interface PatientLayoutProps {
+    children?: React.ReactNode;
+}
+
+const PatientLayout = ({ children }: PatientLayoutProps) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuth();
@@ -123,7 +127,7 @@ const PatientLayout = () => {
                             {/* User Info */}
                             <div className="flex items-center gap-3">
                                 <div className="text-right">
-                                    <p className="text-sm font-medium">{user?.name || 'John Patient'}</p>
+                                    <p className="text-sm font-medium">{user?.full_name || user?.name || 'Patient'}</p>
                                     <p className="text-xs text-muted-foreground">Patient ID: {user?.id || 'P001'}</p>
                                 </div>
                                 <Button variant="ghost" size="icon" onClick={logout}>
@@ -174,7 +178,7 @@ const PatientLayout = () => {
 
                 {/* Main Content */}
                 <main className="flex-1 p-6">
-                    <Outlet />
+                    {children || <Outlet />}
                 </main>
             </div>
         </div>

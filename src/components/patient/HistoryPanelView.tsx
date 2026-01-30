@@ -46,7 +46,8 @@ const HistoryPanelView = () => {
             if (!user?.id) return;
 
             try {
-                const userCases = await casesAPI.getUserCases(user.id);
+                const userId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
+                const userCases = await casesAPI.getUserCases(userId);
 
                 // Transform API data to match component interface
                 const transformedCases = userCases.map((apiCase: any) => ({
@@ -60,7 +61,7 @@ const HistoryPanelView = () => {
                     last_update: apiCase.last_update,
                     messageCount: Math.floor(Math.random() * 15) + 3, // Mock message count
                     hasUnreadMessages: Math.random() > 0.7 // Mock unread status
-                }));
+                })).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
                 setCases(transformedCases);
             } catch (error) {
@@ -75,7 +76,18 @@ const HistoryPanelView = () => {
     }, [user?.id]);
 
     const handleCaseClick = (caseData: CaseData) => {
-        setSelectedCase(caseData);
+        // Transform to match CaseDetailSlideOver interface
+        const transformedCase = {
+            id: caseData.id,
+            caseNumber: caseData.case_number,
+            date: caseData.created_at,
+            medicine: caseData.medicine_name,
+            symptom: caseData.symptoms,
+            status: caseData.status as 'pending' | 'reviewed' | 'closed' | 'urgent',
+            riskLevel: Math.ceil(caseData.severity_score * 5) as 1 | 2 | 3 | 4 | 5,
+            lastUpdate: caseData.last_update
+        };
+        setSelectedCase(transformedCase);
         setIsSlideOverOpen(true);
     };
 

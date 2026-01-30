@@ -52,16 +52,28 @@ class PatientProfile(SQLModel, table=True):
     is_pregnant: Optional[bool] = None
     is_breastfeeding: Optional[bool] = None
     pin_code: Optional[str] = None
+    location: Optional[str] = None  # City, State
+    
+    # Physical Attributes
+    blood_group: Optional[str] = None  # A+, B+, O-, etc.
+    height: Optional[str] = None  # in cm
+    weight: Optional[str] = None  # in kg
     
     # Medical History
     drug_allergies: Optional[bool] = None
     allergy_details: Optional[str] = None
     food_allergies: Optional[bool] = None
     food_allergy_details: Optional[str] = None
+    allergies: Optional[str] = None  # JSON array of all allergies
     medical_conditions: Optional[str] = None  # JSON string of conditions array
     abha_id: Optional[str] = None
     current_medicines: Optional[bool] = None
     current_medicine_details: Optional[str] = None
+    
+    # Emergency Contact
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_relation: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
     
     # Profile Completion
     language: Optional[str] = None
@@ -115,3 +127,19 @@ class Feedback(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     user: Optional[User] = Relationship(back_populates="feedback_cases")
+    messages: List["Message"] = Relationship(back_populates="case")
+
+# --- Chat/Messages ---
+class Message(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    case_id: int = Field(foreign_key="feedback.id")
+    sender_id: int # User ID of sender
+    sender_role: str # patient, doctor, pharmacist, admin, or system
+    content: str
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    
+    # Optional attachment support for later
+    attachment_url: Optional[str] = None
+    attachment_type: Optional[str] = None # image, pdf, etc.
+    
+    case: Optional[Feedback] = Relationship(back_populates="messages")

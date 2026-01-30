@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -18,22 +18,24 @@ import {
     Upload
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { casesAPI } from '@/lib/api';
+import { toast } from 'sonner';
 
 interface CaseData {
-    id: string;
+    id: string | number;
     caseNumber: string;
     date: string;
     medicine: string;
     symptom: string;
-    status: 'pending' | 'reviewed' | 'closed' | 'urgent';
-    riskLevel: 1 | 2 | 3 | 4 | 5;
+    status: string;
+    riskLevel: number;
     doctorVerdict?: string;
-    lastUpdate: string;
+    lastUpdate?: string;
 }
 
 interface ChatMessage {
     id: string;
-    sender: 'user' | 'doctor' | 'system';
+    sender: 'user' | 'doctor' | 'system' | 'patient';
     message: string;
     timestamp: string;
     type?: 'text' | 'image' | 'file';
@@ -45,69 +47,42 @@ interface CaseDetailSlideOverProps {
     caseData: CaseData | null;
 }
 
-// Mock chat history for the case
-const mockChatHistory: ChatMessage[] = [
-    {
-        id: '1',
-        sender: 'system',
-        message: 'Case opened. Patient reported side effects.',
-        timestamp: '2025-01-28 10:30 AM',
-        type: 'text'
-    },
-    {
-        id: '2',
-        sender: 'user',
-        message: 'I started taking Dolo-650 yesterday and developed a red rash on my arms and chest. It\'s itchy and spreading.',
-        timestamp: '2025-01-28 10:32 AM',
-        type: 'text'
-    },
-    {
-        id: '3',
-        sender: 'user',
-        message: 'Here\'s a photo of the rash',
-        timestamp: '2025-01-28 10:33 AM',
-        type: 'image'
-    },
-    {
-        id: '4',
-        sender: 'system',
-        message: 'Case escalated to Risk Level 3. Doctor notification sent.',
-        timestamp: '2025-01-28 11:00 AM',
-        type: 'text'
-    },
-    {
-        id: '5',
-        sender: 'doctor',
-        message: 'Hello, I\'m Dr. Sharma. I\'ve reviewed your case. The rash appears to be an allergic reaction to paracetamol. Please stop taking Dolo-650 immediately.',
-        timestamp: '2025-01-28 2:15 PM',
-        type: 'text'
-    },
-    {
-        id: '6',
-        sender: 'doctor',
-        message: 'I\'m prescribing an antihistamine. Please take Cetirizine 10mg once daily for 3 days. The rash should subside.',
-        timestamp: '2025-01-28 2:16 PM',
-        type: 'text'
-    },
-    {
-        id: '7',
-        sender: 'user',
-        message: 'Thank you doctor. Should I be concerned about taking other paracetamol-based medicines?',
-        timestamp: '2025-01-28 3:45 PM',
-        type: 'text'
-    },
-    {
-        id: '8',
-        sender: 'doctor',
-        message: 'Yes, please avoid all paracetamol-containing medications. I\'ll update your allergy profile. For fever, you can use ibuprofen instead.',
-        timestamp: '2025-01-28 4:20 PM',
-        type: 'text'
-    }
-];
-
 const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverProps) => {
     const [newMessage, setNewMessage] = useState('');
-    const [chatHistory, setChatHistory] = useState<ChatMessage[]>(mockChatHistory);
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    // Fetch real case messages when component opens
+    useEffect(() => {
+        if (isOpen && caseData?.id) {
+            loadCaseMessages();
+        }
+    }, [isOpen, caseData?.id]);
+
+    const loadCaseMessages = async () => {
+        if (!caseData?.id) return;
+        setLoading(true);
+        try {
+            const messages = await casesAPI.getCaseMessages(caseData.id);
+
+            // Transform backend messages to UI format
+            const formattedMessages: ChatMessage[] = messages.map((msg: any) => ({
+                id: msg.id.toString(),
+                sender: msg.sender_role === 'patient' ? 'user' :
+                    msg.sender_role === 'doctor' ? 'doctor' : 'system',
+                message: msg.content,
+                timestamp: new Date(msg.timestamp).toLocaleString(),
+                type: 'text'
+            }));
+
+            setChatHistory(formattedMessages);
+        } catch (error) {
+            console.error('Failed to load case messages:', error);
+            toast.error('Failed to load case messages');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (!caseData) return null;
 
@@ -217,7 +192,7 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                         </h4>
                     </div>
 
-                    <ScrollArea className="flex-1 p-4">
+                    <ScrollArea className="h-[150px] p-4">
                         <div className="space-y-4">
                             {chatHistory.map((msg) => (
                                 <div
