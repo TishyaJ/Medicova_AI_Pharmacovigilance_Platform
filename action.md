@@ -402,6 +402,24 @@ Case creation was failing with SQL constraint violation when trying to insert me
 
 ---
 
-**Last Updated:** 2026-01-31 01:19 IST  
-**Status:** ✅ All major features of analytics and patient dashboards implemented and functional
+## 2026-01-31 - AI/ML Implementation Strategy Documentation
+
+**Action:**
+Created a comprehensive technical strategy for the integration of AI/ML models within the Medicova ecosystem.
+
+**Key Components Documented:**
+1. **Risk Triage Engine (01_Risk_Triage_Engine.ipynb)**: BioBERT + ScispaCy + XGBoost for medical text classification.
+2. **Vision Evidence Analyzer (02_Vision_Evidence_Analyzer.ipynb)**: Fine-tuned ResNet-50 + PaddleOCR for medical image analysis and data extraction.
+3. **Signal Detection Analytics (03_Signal_Detection_Analytics.ipynb)**: Isolation Forest + DBSCAN for anomaly detection and regional outbreak clustering.
+4. **Pharmacist RAG Assistant (04_Pharmacist_RAG_Bot.ipynb)**: FAISS + Flan-T5 for fact-grounded medical Q&A.
+
+**Files Created:**
+- `model_implementation_strategy.md`
+
+**Status:** ✅ Strategic roadmap finalized; ready for model development phase.
+
+---
+
+**Last Updated:** 2026-01-31 01:55 IST  
+**Status:** ✅ All major features of analytics and patient dashboards implemented; AI/ML roadmap finalized.
 
