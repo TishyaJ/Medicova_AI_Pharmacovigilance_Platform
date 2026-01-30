@@ -420,6 +420,47 @@ Created a comprehensive technical strategy for the integration of AI/ML models w
 
 ---
 
-**Last Updated:** 2026-01-31 01:55 IST  
-**Status:** ✅ All major features of analytics and patient dashboards implemented; AI/ML roadmap finalized.
+## 2026-01-31 - Gemini AI Engine Implementation (Non-Breaking Addition)
+
+**Action:**
+Implemented production-ready AI engine using Google Gemini 1.5 Flash as an **optional enhancement** to the existing platform. All changes are additive and do not affect existing functionality.
+
+**New Files Created:**
+1. `backend/ai_engine.py` - Core AI module with risk triage, vision analysis, and follow-up generation
+2. `backend/routers/ai_analysis.py` - FastAPI router with 3 new endpoints:
+   - `POST /api/ai/analyze-triage` - Analyze patient text and assign risk level (1-5)
+   - `POST /api/ai/analyze-vision` - Extract batch numbers from medicine packaging images
+   - `POST /api/ai/generate-followup` - Generate intelligent follow-up questions
+3. `AI_ENGINE_SETUP.md` - Complete setup guide with API examples
+
+**Minor Changes (Non-Breaking):**
+- `backend/main.py`: Added single line to register AI router (existing routes unchanged)
+- `backend/requirements.txt`: Added 2 dependencies (google-generativeai, python-multipart)
+
+**Key Features:**
+- **No GPU Required**: Runs on CPU using Gemini API (vs. Full_Engine_Model.ipynb which needs 40GB VRAM)
+- **Free Tier**: 15 requests/minute at no cost
+- **Real AI**: Actual generative inference (vs. mock/hardcoded responses)
+- **Fail-Safe**: If GEMINI_API_KEY not set, AI endpoints return 503 but app continues working
+- **Optional**: Existing case creation flow unchanged; AI can be integrated later
+
+**Why This Approach:**
+Chose Gemini 1.5 Flash over BioMistral/Full_Engine_Model because:
+- Production-ready (not proof-of-concept)
+- No infrastructure costs
+- 5-minute setup vs. days
+- Multimodal (text + vision) out of the box
+
+**Integration Status:**
+- ✅ Backend AI engine ready
+- ✅ API endpoints functional
+- ⏳ Frontend integration pending (optional)
+- ⏳ Image upload with auto batch extraction (optional)
+
+**Backward Compatibility:** ✅ 100% - All existing features work exactly as before.
+
+---
+
+**Last Updated:** 2026-01-31 03:40 IST  
+**Status:** ✅ All major features implemented; AI engine added as optional enhancement.
 
