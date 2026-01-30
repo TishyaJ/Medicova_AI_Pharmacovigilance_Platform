@@ -105,8 +105,8 @@ To reach a truly professional grade, we will integrate these additional AI-enhan
 
 ## 📅 Roadmap for Implementation
 
-1. **Week 1**: Data Generation. Create a synthetic dataset of 5,000+ reports representing various risk levels and regional clusters.
-2. **Week 2**: Core Brain. Train and export the `Risk_Engine` and `NER_Model`.
-3. **Week 3**: The Eyes. Implement the vision pipeline for medicine strip OCR.
-4. **Week 4**: Signal Detection. Integrate the Anomaly Detection with the Admin Heatmap.
-5. **Week 5**: Assistance. Set up the RAG pipeline for the Pharmacist Guideline Bot.
+1. **1**: Data Generation. Create a synthetic dataset of 5,000+ reports representing various risk levels and regional clusters.
+2. **2**: Core Brain. Train and export the `Risk_Engine` and `NER_Model`.
+3. **3**: The Eyes. Implement the vision pipeline for medicine strip OCR.
+4. **4**: Signal Detection. Integrate the Anomaly Detection with the Admin Heatmap.
+5. **5**: Assistance. Set up the RAG pipeline for the Pharmacist Guideline Bot.
