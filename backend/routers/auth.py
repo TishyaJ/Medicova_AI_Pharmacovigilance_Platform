@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from ..database import get_session
-from ..models import User, UserRole, PatientProfile, DoctorProfile, PharmacistProfile
+from database import get_session
+from models import User, UserRole, PatientProfile, DoctorProfile, PharmacistProfile
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 

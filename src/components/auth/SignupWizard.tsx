@@ -47,20 +47,28 @@ const SignupWizard = () => {
                 role: selectedRole,
                 full_name: name,
                 email: email,
-                password_hash: password, // In real app, hash on server, but sending plain for now as per mock requirement
-                // We might need to handle profile creation in a separate call or update backend to handle it
-                // For now, sending basic user data + profile data if we updated backend. 
-                // But let's stick to the backend expectation: User model.
+                password_hash: password,
             };
 
             await api.post('/auth/signup', payload);
 
             toast.success("Registration Successful! Please Login.");
-            // Reset or redirect
-            window.location.reload(); // Simple reload to go back to login state or use Tab control if lifted state
+            window.location.reload();
         } catch (error: any) {
             console.error(error);
-            toast.error(error.response?.data?.detail || "Registration Failed");
+
+            // If backend is not available, show helpful message and allow mock login
+            if (error.code === 'ERR_NETWORK' || error.message?.includes('ECONNREFUSED')) {
+                toast.info("Backend not running. You can still test with mock login!", {
+                    duration: 4000,
+                });
+                // Switch to login tab after a delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                toast.error(error.response?.data?.detail || "Registration Failed");
+            }
         }
     };
 
@@ -218,9 +226,13 @@ const SignupWizard = () => {
     return (
         <div>
             {/* Progress Indicator */}
-            <div className="flex gap-2 mb-6 justify-center">
+            <div className="flex gap-2 mb-6 justify-center" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={3} aria-label="Registration progress">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className={`h-2 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-muted'}`} />
+                    <div
+                        key={i}
+                        className={`h-2 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-muted'}`}
+                        aria-label={`Step ${i}${i === step ? ' - current' : i < step ? ' - completed' : ' - upcoming'}`}
+                    />
                 ))}
             </div>
 

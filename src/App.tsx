@@ -10,7 +10,7 @@ import Login from "@/pages/Login";
 import PatientDashboard from "@/pages/patient/PatientDashboard";
 import DoctorDashboard from "@/pages/doctor/DoctorDashboard";
 import PharmacistDashboard from "@/pages/pharmacist/PharmacistDashboard";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminDashboard from "@/pages/admin/AdminDashboardNew";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();

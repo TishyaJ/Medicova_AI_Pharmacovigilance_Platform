@@ -1,23 +1,246 @@
-# Repository Analysis & Action Plan
+# Medicova - Production Refactor Action Log
 
-## Current State Analysis
-**Tech Stack**: Vite + React + TypeScript + Tailwind + Shadcn UI
-**Backend**: FastAPI (Integrated via Proxy) / Mock Data fallback
+## Project Overview
+**Name**: Medicova (formerly Medicircle Connect)
+**Type**: AI-Powered Pharmacovigilance Platform
+**Tech Stack**: React + Vite + TypeScript + Tailwind CSS + Shadcn/UI
+**Backend**: Python FastAPI + Neon DB (PostgreSQL)
 
-## Component Inventory
-- **Pages**:
-    - `Login.tsx`: Recent overhaul (2x2 Grid + OTP). Needs refactor for Tabs (Login/Signup).
-    - `admin/AdminDashboard.tsx`
-    - `doctor/DoctorDashboard.tsx`: Needs flow fixes.
-    - `patient/PatientDashboard.tsx`: Needs complete Chat-First redesign.
-    - `pharmacist/PharmacistDashboard.tsx`: Needs expansion.
-- **Components**:
-    - `ui/*`: Full Shadcn suite available (49 components).
-    - `layout/`: Dashboard layouts.
+---
 
-## Findings
-- **Tech Stack Match**: The current stack (Vite + React) is robust. Migrating to Next.js would be high-risk/low-reward for this refactor.
-- **Authentication**: `Login.tsx` is already advanced but needs to be split into a Tabbed view to support the new "Sign Up" wizard.
-- **Styling**: Tailwind is already configured (`tailwind.config.ts` exists).
-- **State**: `AuthContext` exists. Will likely need a `PatientContext` for the chat flow.
-- **Routing**: `App.tsx` handles routing. Will need to add the new Sign Up routes or handle it within the Auth wrapper.
+## Current State Analysis (Jan 30, 2025)
+
+### Existing Structure
+- **Pages**: Login, PatientDashboard, DoctorDashboard, PharmacistDashboard, AdminDashboard
+- **Auth Components**: LoginTab.tsx, SignupWizard.tsx (already exist!)
+- **Context**: AuthContext, LanguageContext (multi-language support)
+- **UI Components**: Full Shadcn/UI suite (49+ components)
+- **Routing**: React Router v6 with role-based protected routes
+
+### Key Findings
+✅ **Authentication Flow**: Already has tabbed Login/Signup with wizard
+✅ **Role Selection**: 4-card grid (Patient, Doctor, Pharmacist, Admin) already implemented
+✅ **OTP Flow**: Mock OTP verification already working
+✅ **Multi-language**: Hindi, Tamil, Telugu, Bengali support via LanguageContext
+✅ **Patient Dashboard**: WhatsApp-style chat interface already built
+✅ **Doctor Dashboard**: Case management with risk levels and review system
+✅ **Admin Dashboard**: KPI cards, user management, analytics tabs
+✅ **Pharmacist Dashboard**: Stock management, complaint forms, AI assistant
+
+### Areas for Enhancement
+🔧 **Design Polish**: Improve typography, spacing, color consistency
+🔧 **Accessibility**: Add ARIA labels, keyboard navigation, screen reader support
+🔧 **Responsiveness**: Ensure mobile-first design across all dashboards
+🔧 **User Experience**: Smooth transitions, loading states, error handling
+🔧 **Code Quality**: Refactor for maintainability, add TypeScript types
+
+---
+
+## Refactoring Strategy
+
+### Phase 1: Foundation & Design System
+- [ ] Audit and enhance Tailwind configuration
+- [ ] Create consistent color palette (Medical Teals/Blues, Red for alerts)
+- [ ] Standardize typography (Inter/Roboto)
+- [ ] Add custom CSS utilities for medical theme
+- [ ] Create reusable component patterns
+
+### Phase 2: Authentication Module (Module A)
+- [x] Login.tsx already has split-card design with tabs ✓
+- [x] LoginTab with role selection (4 large cards) ✓
+- [x] SignupWizard with 3-step flow ✓
+- [ ] Enhance visual design and animations
+- [ ] Add accessibility features
+- [ ] Improve error handling and validation
+
+### Phase 3: Admin Dashboard (Module B)
+- [x] KPI section with 4 cards ✓
+- [x] User Management tab with CRM-style list ✓
+- [x] Analytics tab with charts ✓
+- [ ] Enhance regional heatmap visualization
+- [ ] Add medicine analysis split-screen
+- [ ] Improve data visualization with Recharts
+- [ ] Add user profile modal
+
+### Phase 4: Patient Portal (Module C)
+- [x] WhatsApp-style chat interface ✓
+- [x] Bot greeting and menu buttons ✓
+- [x] Multimodal input (text, camera, mic icons) ✓
+- [ ] Enhance mobile-first design
+- [ ] Improve chat UX and animations
+- [ ] Add better AI response handling
+
+### Phase 5: Doctor & Pharmacist Dashboards (Module D)
+- [x] Doctor: Case queue with risk levels ✓
+- [x] Doctor: Review notes submission ✓
+- [x] Pharmacist: Stock management table ✓
+- [x] Pharmacist: Complaint registration form ✓
+- [ ] Doctor: Add calendar view for appointments
+- [ ] Enhance case detail views
+- [ ] Improve data tables and filters
+
+---
+
+## Action Log
+
+### 2025-01-30 - Initial Analysis
+- **Action**: Comprehensive codebase analysis
+- **Files Reviewed**: All pages, components, contexts, and configuration files
+- **Finding**: Project is well-structured with most features already implemented
+- **Next Steps**: Focus on design polish, accessibility, and UX enhancements
+
+### 2025-01-30 - Phase 1: Design System Enhancement
+- **Action**: Enhanced Tailwind config and CSS with accessibility improvements
+- **Files Modified**: `tailwind.config.ts`, `src/index.css`
+- **Changes**: 
+  - Added focus-visible styles for keyboard navigation
+  - Enhanced color contrast for WCAG AA compliance
+  - Added smooth scroll behavior
+  - Improved animation performance with will-change
+  - Added reduced-motion support
+
+### 2025-01-30 - Phase 2: Authentication Module Enhancement
+- **Action**: Enhanced Login and Signup components with accessibility features
+- **Files Modified**: `src/pages/Login.tsx`, `src/components/auth/LoginTab.tsx`, `src/components/auth/SignupWizard.tsx`
+- **Changes**:
+  - Added skip-to-main-content link for screen readers
+  - Enhanced ARIA labels and roles throughout
+  - Added semantic HTML (main, role attributes)
+  - Improved form accessibility (autocomplete, inputMode, pattern)
+  - Added descriptive aria-labels for all interactive elements
+  - Enhanced keyboard navigation support
+  - Added progress indicator accessibility for signup wizard
+  - **Made Login/Sign Up tabs larger and more prominent** (h-14, bold text, better active state)
+  - **Improved error handling** for when backend is not available
+
+### 2025-01-30 - Documentation & Testing Setup
+- **Action**: Created quick start guide and improved developer experience
+- **Files Created**: `QUICK_START.md`
+- **Changes**:
+  - Added comprehensive setup instructions
+  - Documented mock authentication for testing without backend
+  - Added troubleshooting guide
+  - Created testing checklist
+
+### 2025-01-30 - Backend Import Fixes
+- **Action**: Fixed relative import errors in backend
+- **Files Modified**: `backend/main.py`, `backend/routers/*.py`
+- **Changes**:
+  - Changed relative imports (`.module`) to absolute imports (`module`)
+  - Backend now starts successfully with `uvicorn main:app --reload`
+  - Database connection configured with Neon DB
+
+### 2025-01-30 - Phase 3: Admin Dashboard Restructure (Bird's Eye vs. Deep Dive)
+- **Action**: Complete restructure of Admin Dashboard following hierarchical intelligence model
+- **Files Created**: 
+  - `src/pages/admin/AdminDashboardNew.tsx`
+  - `src/components/admin/UserProfileModal.tsx`
+- **Files Modified**: `src/App.tsx`
+- **Architecture Changes**:
+  
+  **1. Bird's Eye View (Main Dashboard)**:
+  - 4 KPI Cards (The "Pulse"): Critical Alerts, System Load, Bottlenecks, Safety Score
+  - Live Activity Feed: Real-time system updates with color-coded alerts
+  - Trend Chart: Incoming vs. Resolved cases (7-day view)
+  - Warning system when incoming > resolved
+  
+  **2. User Management Panel (Side Panel)**:
+  - CRM-style interface with 3 tabs: Doctors, Pharmacists, Patients
+  - Searchable user lists with avatars and status badges
+  - Click any user to open detailed profile modal
+  - Profile modals show role-specific data:
+    - Doctors: License, Specialization, Cases Assigned/Reviewed, Avg Resolution Time, Recent Reviews
+    - Pharmacists: Shop Name, License, Stock Requests, Adverse Events, Recent Demands
+    - Patients: Demographics, Risk Level, Medical Timeline (vertical timeline with color-coded events)
+  
+  **3. Analytics Panel (Side Panel)**:
+  - Risk Distribution Pie Chart (by severity level)
+  - Regional Heatmap (interactive, drill-down ready)
+  - Top Flagged Medicines with trend indicators and confidence scores
+  
+  **Design Improvements**:
+  - Clean, uncluttered main view
+  - Side panels for deep dives (prevents cognitive overload)
+  - Color-coded alerts (Red=Critical, Yellow=Warning, Green=Success, Blue=Info)
+  - Smooth animations and transitions
+  - Fully responsive layout
+
+### 2025-01-30 - Phase 3 REVISION: Left Sidebar Navigation
+- **Action**: Restructured Admin Dashboard to use permanent left sidebar navigation
+- **Files Created**:
+  - `src/components/layout/AdminSidebar.tsx` - Permanent left sidebar with navigation
+  - `src/components/admin/DashboardView.tsx` - Bird's Eye View content
+  - `src/components/admin/UsersView.tsx` - User Management content (Doctors, Pharmacists, Patients tabs)
+  - `src/components/admin/AnalyticsView.tsx` - Analytics content with charts and heatmap
+- **Files Modified**: `src/pages/admin/AdminDashboardNew.tsx` - Now uses sidebar + view system
+- **Architecture Changes**:
+  
+  **Left Sidebar (Fixed)**:
+  - Dashboard, Users, Analytics, Doctors, Settings menu items
+  - Active state highlighting
+  - Logout button at bottom
+  - Always visible, fixed position
+  
+  **Main Content Area**:
+  - Dashboard View: KPI cards, trend chart, live feed
+  - Users View: Tabs for Doctors/Pharmacists/Patients, grid cards, search, profile modals
+  - Analytics View: Risk distribution, regional heatmap, medicine analysis
+  
+  **User Experience**:
+  - Click sidebar items to switch views
+  - Content changes in main area (no overlays)
+  - Profile modals open on user card click
+  - Clean, enterprise-style navigation
+
+### 2025-01-30 - Phase 3 FIX: Proper Routing Integration
+- **Action**: Fixed Admin Dashboard to work with existing layout and routing
+- **Files Modified**: 
+  - `src/pages/admin/AdminDashboardNew.tsx` - Now uses React Router Routes
+  - `src/components/layout/Sidebar.tsx` - Removed Settings from admin nav
+- **Files Deleted**:
+  - `src/components/layout/AdminSidebar.tsx` - Removed duplicate, using existing Sidebar
+- **Fix**:
+  - Admin Dashboard now uses existing Sidebar component from DashboardLayout
+  - Proper routing with /admin, /admin/users, /admin/analytics, /admin/doctors
+  - No duplicate sidebars
+  - Clicking sidebar items now properly navigates between views
+  - Settings removed from navigation as requested
+
+### 2025-01-30 - Phase 4: Advanced Analytics Implementation
+- **Action**: Implemented comprehensive analytics with Regional Intelligence and Medicine Risk Analysis
+- **Files Created**:
+  - `src/components/admin/analytics/RegionalIntelligence.tsx` - Regional heatmap with drill-down
+  - `src/components/admin/analytics/MedicineRiskAnalysis.tsx` - Medicine analysis dashboard
+  - `src/components/admin/analytics/medicineData.ts` - Mock medicine data
+- **Files Modified**: `src/components/admin/AnalyticsView.tsx` - Now uses tabs for two views
+- **Features Implemented**:
+  
+  **Regional Intelligence Tab**:
+  - National View: Interactive India map with state hotspots
+  - Color-coded by severity (Red=High, Orange=Medium, Green=Low)
+  - Hover tooltips showing case counts and critical alerts
+  - Click any state to drill down
+  - State Drill-Down: Pincode-level clusters (e.g., Mumbai, Pune in Maharashtra)
+  - Identifies bad batch clusters by location
+  - City-wise breakdown with critical case counts
+  
+  **Medicine Risk Analysis Tab**:
+  - Split-screen layout: Medicine list (left) + Analysis dashboard (right)
+  - Searchable medicine database
+  - Click any medicine to see instant analysis:
+    - AI Summary Cards: Overall Summary, Sentiment, Suggested Actions
+    - Safety Profile: Donut chart showing risk level distribution (Level 1-5)
+    - Batch vs. Safety: Bar chart comparing Units Sold vs. Adverse Events
+    - Symptom Word Cloud: Most reported symptoms with size-based frequency
+  - Real-time sentiment analysis (High Alert, Moderate Concern, Low Risk)
+  - Batch-level safety signals (identifies problematic batches)
+
+### 2025-01-30 - Cleanup: Removed Unused Files
+- **Action**: Cleaned up old/unused files without breaking functionality
+- **Files Deleted**:
+  - `src/pages/admin/AdminDashboard.tsx` - Replaced by AdminDashboardNew.tsx
+- **Files Kept** (still in use):
+  - All components in `src/components/admin/` - actively used
+  - `QUICK_START.md` - useful documentation
+  - `ADMIN_DASHBOARD_GUIDE.md` - useful documentation
+- **Verification**: Confirmed no imports reference deleted files

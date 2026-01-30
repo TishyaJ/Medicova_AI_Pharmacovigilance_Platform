@@ -102,13 +102,44 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Improved focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Skip to main content link for screen readers */
+  .skip-to-main {
+    @apply absolute -top-full left-0 z-50 bg-primary text-primary-foreground px-4 py-2 rounded-br-lg;
+    @apply focus:top-0 transition-all;
   }
 }
 
 @layer components {
+
   /* Medical Card Styles */
   .medical-card {
     @apply bg-card rounded-xl p-6 border border-border;
@@ -136,6 +167,7 @@
   .btn-medical-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200;
     box-shadow: var(--shadow-sm);
+    will-change: transform, box-shadow;
   }
 
   .btn-medical-primary:hover {
@@ -143,14 +175,25 @@
     transform: translateY(-1px);
   }
 
+  .btn-medical-primary:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+  }
+
   .btn-medical-secondary {
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 transition-all duration-200;
     box-shadow: var(--shadow-sm);
+    will-change: transform, box-shadow;
   }
 
   .btn-medical-secondary:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
+  }
+
+  .btn-medical-secondary:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
   }
 
   /* Gradient backgrounds */
@@ -181,10 +224,14 @@
   }
 
   @keyframes typing {
-    0%, 60%, 100% {
+
+    0%,
+    60%,
+    100% {
       transform: translateY(0);
       opacity: 0.4;
     }
+
     30% {
       transform: translateY(-8px);
       opacity: 1;
@@ -200,9 +247,11 @@
     0% {
       box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.4);
     }
+
     70% {
       box-shadow: 0 0 0 15px hsl(var(--destructive) / 0);
     }
+
     100% {
       box-shadow: 0 0 0 0 hsl(var(--destructive) / 0);
     }
@@ -258,6 +307,7 @@
       opacity: 0;
       transform: translateY(10px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -273,6 +323,7 @@
       opacity: 0;
       transform: translateX(-20px);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);

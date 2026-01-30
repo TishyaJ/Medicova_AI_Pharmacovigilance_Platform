@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from ..models import SeverityLabel
+from models import SeverityLabel
 
 router = APIRouter(prefix="/api/ai", tags=["ai"])
 

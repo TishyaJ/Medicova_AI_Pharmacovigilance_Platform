@@ -51,7 +51,6 @@ const Sidebar = () => {
           { icon: Users, label: 'Users', path: '/admin/users' },
           { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
           { icon: Stethoscope, label: 'Doctors', path: '/admin/doctors' },
-          { icon: Settings, label: 'Settings', path: '/admin/settings' },
         ];
       default:
         return [];

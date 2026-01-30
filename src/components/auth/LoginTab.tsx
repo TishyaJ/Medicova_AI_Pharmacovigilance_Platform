@@ -97,6 +97,7 @@ const LoginTab = () => {
                             setLoginMethod('password');
                             setOtpSent(false);
                         }}
+                        aria-label="Go back to role selection"
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
@@ -105,7 +106,7 @@ const LoginTab = () => {
                 <h2 className="text-xl font-semibold">
                     {selectedRole ? `${t(selectedRole)} Login` : "Select Your Role"}
                 </h2>
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-sm text-muted-foreground text-center mt-1">
                     {selectedRole
                         ? "Please sign in to continue"
                         : "Who are you logging in as?"}
@@ -113,14 +114,15 @@ const LoginTab = () => {
             </div>
 
             {!selectedRole ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4" role="group" aria-label="User role selection">
                     {roleCards.map((card) => (
                         <button
                             key={card.role}
                             onClick={() => setSelectedRole(card.role)}
-                            className={`flex flex-col items-center p-6 rounded-xl border-2 border-transparent transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${card.color}`}
+                            className={`flex flex-col items-center p-6 rounded-xl border-2 border-transparent transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${card.color}`}
+                            aria-label={`Login as ${card.label}: ${card.description}`}
                         >
-                            <card.icon className="h-10 w-10 mb-3" />
+                            <card.icon className="h-10 w-10 mb-3" aria-hidden="true" />
                             <span className="font-bold text-lg">{card.label}</span>
                             <span className="text-xs text-center mt-1 opacity-80">{card.description}</span>
                         </button>
@@ -129,29 +131,35 @@ const LoginTab = () => {
             ) : (
                 <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                     {selectedRole === 'patient' && (
-                        <div className="flex p-1 bg-muted rounded-lg mb-6">
+                        <div className="flex p-1 bg-muted rounded-lg mb-6" role="tablist" aria-label="Login method">
                             <button
                                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${loginMethod === 'password' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                                 onClick={() => setLoginMethod('password')}
+                                role="tab"
+                                aria-selected={loginMethod === 'password'}
+                                aria-label="Login with password"
                             >
                                 Password
                             </button>
                             <button
                                 className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${loginMethod === 'otp' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-foreground'}`}
                                 onClick={() => setLoginMethod('otp')}
+                                role="tab"
+                                aria-selected={loginMethod === 'otp'}
+                                aria-label="Login with OTP"
                             >
                                 OTP Login
                             </button>
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-5">
+                    <form onSubmit={handleLogin} className="space-y-5" noValidate>
                         {loginMethod === 'password' ? (
                             <>
                                 <div className="space-y-2">
                                     <Label htmlFor="email">{t('email')}</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                                         <Input
                                             id="email"
                                             type="email"
@@ -159,6 +167,8 @@ const LoginTab = () => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             className="h-12 pl-10"
+                                            aria-required="true"
+                                            autoComplete="email"
                                         />
                                     </div>
                                 </div>
@@ -166,7 +176,7 @@ const LoginTab = () => {
                                 <div className="space-y-2">
                                     <Label htmlFor="password">{t('password')}</Label>
                                     <div className="relative">
-                                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                                         <Input
                                             id="password"
                                             type="password"
@@ -174,6 +184,8 @@ const LoginTab = () => {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             className="h-12 pl-10"
+                                            aria-required="true"
+                                            autoComplete="current-password"
                                         />
                                     </div>
                                 </div>
@@ -183,7 +195,7 @@ const LoginTab = () => {
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">Phone Number</Label>
                                     <div className="relative">
-                                        <Smartphone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Smartphone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
                                         <Input
                                             id="phone"
                                             type="tel"
@@ -192,6 +204,8 @@ const LoginTab = () => {
                                             onChange={(e) => setPhoneNumber(e.target.value)}
                                             className="h-12 pl-10"
                                             disabled={otpSent}
+                                            aria-required="true"
+                                            autoComplete="tel"
                                         />
                                     </div>
                                 </div>
@@ -207,7 +221,14 @@ const LoginTab = () => {
                                             maxLength={6}
                                             value={otp}
                                             onChange={(e) => setOtp(e.target.value)}
+                                            aria-required="true"
+                                            aria-describedby="otp-help"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
                                         />
+                                        <p id="otp-help" className="text-xs text-muted-foreground">
+                                            Enter the 6-digit code sent to your phone
+                                        </p>
                                     </div>
                                 )}
 
@@ -217,6 +238,7 @@ const LoginTab = () => {
                                         onClick={handleSendOtp}
                                         className="w-full h-12"
                                         variant="secondary"
+                                        aria-label="Send OTP to phone number"
                                     >
                                         <Send className="mr-2 h-4 w-4" /> Send OTP
                                     </Button>
@@ -227,6 +249,7 @@ const LoginTab = () => {
                         <Button
                             type="submit"
                             className="btn-medical-primary h-12 w-full gap-2 text-base"
+                            aria-label={loginMethod === 'otp' ? 'Verify OTP and login' : 'Login to account'}
                         >
                             <LogIn className="h-5 w-5" />
                             {loginMethod === 'otp' ? 'Verify to Login' : t('login')}
