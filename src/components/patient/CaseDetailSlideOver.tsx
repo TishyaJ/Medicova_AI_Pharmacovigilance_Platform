@@ -214,7 +214,7 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                         </h4>
                     </div>
 
-                    <ScrollArea className="h-[350px] p-4">
+                    <ScrollArea className="h-[300px] p-4">
                         <div className="space-y-4">
                             {chatHistory.map((msg) => (
                                 <div
