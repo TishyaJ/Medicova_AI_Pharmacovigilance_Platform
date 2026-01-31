@@ -146,7 +146,22 @@ def signup(request: SignupRequest, session: Session = Depends(get_session)):
 
 @router.post("/login")
 def login(request: LoginRequest, session: Session = Depends(get_session)):
+    # DEBUG logging
+    print(f"\n🔍 LOGIN ATTEMPT:")
+    print(f"   Email: {request.email}")
+    print(f"   Password received: '{request.password_hash}' (len={len(request.password_hash)})")
+    
     user = session.exec(select(User).where(User.email == request.email)).first()
+    
+    if user:
+        print(f"   ✓ User found: {user.email}")
+        print(f"   Stored password: '{user.password_hash}' (len={len(user.password_hash)})")
+        print(f"   Match: {user.password_hash == request.password_hash}")
+        print(f"   Repr received: {repr(request.password_hash)}")
+        print(f"   Repr stored: {repr(user.password_hash)}\n")
+    else:
+        print(f"   ✗ User NOT found\n")
+    
     if not user or user.password_hash != request.password_hash:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
@@ -159,7 +174,7 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
                 "age": profile.age,
                 "gender": profile.gender,
                 "pin_code": profile.pin_code,
-                "profile_complete": profile.profile_complete,
+                "profile_complete": profile.complete,
                 "language": profile.language,
                 "medical_conditions": json.loads(profile.medical_conditions) if profile.medical_conditions else []
             }

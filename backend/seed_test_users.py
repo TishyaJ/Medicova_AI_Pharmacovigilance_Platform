@@ -106,12 +106,10 @@ def create_test_users():
             if user.role == UserRole.patient:
                 profile = PatientProfile(
                     user_id=user.id,
-                    age=profile_data.get("age"),
+                    age=str(profile_data.get("age", "")),  # age is stored as string
                     gender=profile_data.get("gender"),
                     location=profile_data.get("location"),
                     pin_code=profile_data.get("pin_code"),
-                    medical_conditions=profile_data.get("medical_conditions", []),
-                    allergies=profile_data.get("allergies", []),
                     emergency_contact=profile_data.get("emergency_contact"),
                     blood_group=profile_data.get("blood_group"),
                     profile_complete=profile_data.get("profile_complete", False)
