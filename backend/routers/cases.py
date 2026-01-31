@@ -62,6 +62,78 @@ class CaseResponse(BaseModel):
 # CASE MANAGEMENT ENDPOINTS
 # ==========================================
 
+@router.get("/", response_model=List[CaseResponse])
+def get_cases(
+    role: Optional[str] = Query(None, description="Filter by user role (doctor, pharmacist, admin)"),
+    user_id: Optional[int] = Query(None, description="Filter by specific user ID"),
+    status: Optional[str] = Query(None, description="Filter by case status"),
+    session: Session = Depends(get_session)
+):
+    """
+    Get cases with optional filtering by role, user, or status
+    
+    This endpoint supports multiple use cases:
+    - Doctor dashboard: Get all pending/escalated cases
+    - Pharmacist dashboard: Get cases related to specific medicines
+    - Admin dashboard: Get all cases with optional status filter
+    - Patient dashboard: Get cases for specific user_id
+    
+    Args:
+        role: User role for filtering (doctor, pharmacist, admin)
+        user_id: Specific user ID to filter by
+        status: Case status to filter by (pending, escalated, reviewed)
+        session: Database session (injected)
+        
+    Returns:
+        List of CaseResponse objects matching the filters
+    """
+    query = select(Feedback)
+    
+    # Apply filters based on parameters
+    if user_id:
+        # Patient-specific cases
+        query = query.where(Feedback.user_id == user_id)
+    elif role == "doctor":
+        # Doctors see all pending and escalated cases
+        query = query.where(
+            (Feedback.status == CaseStatus.pending) | 
+            (Feedback.status == CaseStatus.escalated)
+        )
+    elif role == "pharmacist":
+        # Pharmacists see all cases (for medicine tracking)
+        pass  # No additional filter
+    elif role == "admin":
+        # Admins see all cases
+        pass  # No additional filter
+    
+    # Apply status filter if provided
+    if status:
+        try:
+            status_enum = CaseStatus(status)
+            query = query.where(Feedback.status == status_enum)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid status: {status}")
+    
+    # Order by created_at descending (newest first)
+    query = query.order_by(Feedback.created_at.desc())
+    
+    cases = session.exec(query).all()
+    
+    return [
+        CaseResponse(
+            id=case.id,
+            case_number=case.case_number,
+            medicine_name=case.medicine_name,
+            symptoms=case.symptoms,
+            status=case.status,
+            severity_score=case.severity_score,
+            severity_label=case.severity_label,
+            created_at=case.created_at,
+            last_update=case.created_at.strftime("%Y-%m-%d %H:%M")
+        )
+        for case in cases
+    ]
+
 @router.get("/user/{user_id}", response_model=List[CaseResponse])
 def get_user_cases(user_id: int, session: Session = Depends(get_session)):
     """
