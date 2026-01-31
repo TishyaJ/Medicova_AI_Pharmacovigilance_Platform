@@ -35,11 +35,93 @@ ENV/
 backend/venv/
 backend/__pycache__/
 backend/routers/__pycache__/
+ai-side/__pycache__/
 *.pyc
 
-# Environment variables (CRITICAL: Contains API keys)
+# ===========================================
+# CRITICAL SECURITY: Environment Variables
+# ===========================================
+# NEVER commit these files - they contain API keys and credentials
 .env
+.env.*
+!.env.example
 backend/.env
 backend/.env.*
+!backend/.env.example
+ai-side/.env
+ai-side/.env.*
 .env.local
 .env.*.local
+.env.production
+.env.development
+
+# ===========================================
+# SENSITIVE DATA FILES
+# ===========================================
+# Database backups and exports
+*.sql
+*.sqlite
+*.db
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# API Keys and Credentials
+**/credentials.json
+**/secrets.json
+**/*_credentials.json
+**/*_secrets.json
+
+# Private keys and certificates
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# ===========================================
+# TEMPORARY AND CACHE FILES
+# ===========================================
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Model weights and large files (use Git LFS if needed)
+*.h5
+*.pkl
+*.joblib
+*.model
+models/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ===========================================
+# BUILD AND DEPLOYMENT
+# ===========================================
+# Build outputs
+build/
+*.egg-info/
+dist/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Testing
+.pytest_cache/
+.tox/
