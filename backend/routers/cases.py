@@ -182,36 +182,6 @@ def get_user_cases(user_id: int, session: Session = Depends(get_session)):
     
     return response_cases
 
-@router.get("/", response_model=List[Feedback])
-def get_cases(
-    role: UserRole, 
-    user_id: int, 
-    session: Session = Depends(get_session)
-):
-    # Role-Based Visibility Logic
-    query = select(Feedback)
-    
-    if role == UserRole.patient:
-        # Patient sees only their own cases
-        query = query.where(Feedback.user_id == user_id)
-    
-    elif role == UserRole.doctor:
-         # Doctor sees all pending/escalated (could filter by assigned region later)
-         # For prototype: Doctor sees everything except closed? Or everything?
-         pass 
-
-    elif role == UserRole.pharmacist:
-         # Pharmacist might only see relevant cases (e.g. adverse events)
-         # For prototype: restricted view
-         pass
-         
-    elif role == UserRole.admin:
-        # Admin sees ALL
-        pass
-        
-    cases = session.exec(query).all()
-    return cases
-
 @router.post("/")
 def create_case(request: CaseCreateRequest, session: Session = Depends(get_session)):
     # Create feedback case
