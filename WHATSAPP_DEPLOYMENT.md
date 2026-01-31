@@ -1,74 +1,113 @@
-# 🤖 WhatsApp Bot Deployment Guide
-## Complete Setup: Local Testing → EC2 Production
+# 🚀 WhatsApp Bot Deployment Guide - Step by Step
+
+## 📋 Overview
+
+This guide will walk you through deploying the Medicova WhatsApp bot from local testing to production on AWS EC2. The bot allows patients to report adverse drug reactions via WhatsApp conversations.
 
 ---
 
-## 📋 Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [Local Setup & Testing](#local-setup--testing)
-3. [Twilio Configuration](#twilio-configuration)
-4. [EC2 Deployment](#ec2-deployment)
-5. [Production Checklist](#production-checklist)
+## 🎯 Deployment Phases
+
+1. **Local Setup & Testing** (30 minutes)
+2. **Twilio Account Setup** (15 minutes)
+3. **Database Setup** (10 minutes)
+4. **Local Testing with ngrok** (20 minutes)
+5. **AWS EC2 Deployment** (60 minutes)
+6. **Production Configuration** (30 minutes)
 
 ---
 
-## 🔧 Prerequisites
+## 📦 Phase 1: Local Setup & Testing
 
-### Required Accounts
-- ✅ **Twilio Account** (Free trial: $15 credit)
-  - Sign up: https://www.twilio.com/try-twilio
-  - Verify your phone number
-  
-- ✅ **AWS Account** (Free tier eligible)
-  - Sign up: https://aws.amazon.com/free
-  
-- ✅ **Neon DB** (Already have this)
-  - Your existing database will work
+### Step 1.1: Verify Files
 
-### Required Software
+Check that you have these files in `ai-side/`:
 ```bash
-# Local machine
-- Python 3.11+
-- ngrok (for local testing)
-
-# EC2 instance (we'll install later)
-- Ubuntu 22.04 LTS
-- Python 3.11
-- Nginx
-- Supervisor
+cd ai-side
+ls
 ```
 
----
+**Required files:**
+- ✅ `Whatsapp_Model.ipynb` - Original notebook
+- ✅ `whatsapp_model_deployed.py` - Production FastAPI code (if deleted, we'll recreate it)
 
-## 🏠 Phase 1: Local Setup & Testing
-
-### Step 1.1: Install ngrok
-
-**Windows:**
-```powershell
-# Download from https://ngrok.com/download
-# Or use Chocolatey
-choco install ngrok
-
-# Authenticate (get auth token from ngrok.com)
-ngrok config add-authtoken YOUR_NGROK_AUTH_TOKEN
-```
-
-### Step 1.2: Create Database Table
+### Step 1.2: Install Dependencies
 
 ```bash
-# Connect to your Neon DB and run:
 cd backend
-python
+pip install twilio python-dotenv psycopg2-binary
 ```
 
-```python
-from database import engine
-from sqlmodel import text
+**What you need:**
+- Python 3.11+
+- pip package manager
 
-# Create bot_session table
+---
+
+## 🔑 Phase 2: Twilio Account Setup
+
+### Step 2.1: Create Twilio Account
+
+1. **Go to:** https://www.twilio.com/try-twilio
+2. **Sign up** with your email
+3. **Verify** your phone number
+4. **Get $15 free credit** (no credit card required for trial)
+
+### Step 2.2: Get WhatsApp Sandbox Access
+
+1. **Navigate to:** Console → Messaging → Try it out → Send a WhatsApp message
+2. **Scan QR code** or send message to join sandbox:
+   - Send `join <your-sandbox-code>` to `+1 415 523 8886`
+   - Example: `join happy-tiger-123`
+
+### Step 2.3: Collect Twilio Credentials
+
+**From Twilio Console (https://console.twilio.com):**
+
+| Credential | Where to Find | Example Format |
+|:-----------|:--------------|:---------------|
+| **Account SID** | Console Dashboard | `ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| **Auth Token** | Console Dashboard (click "Show") | `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` |
+| **WhatsApp Number** | Messaging → Try WhatsApp | `whatsapp:+14155238886` |
+
+**Save these - you'll need them in Step 3!**
+
+---
+
+## 💾 Phase 3: Database Setup
+
+### Step 3.1: Create Bot Session Table
+
+Your Neon DB already has the main tables. Now add the bot session table:
+
+**Option A: Using Neon DB Console**
+1. Go to https://console.neon.tech
+2. Select your project
+3. Go to SQL Editor
+4. Run this SQL:
+
+```sql
+CREATE TABLE IF NOT EXISTS bot_session (
+    id SERIAL PRIMARY KEY,
+    phone_number VARCHAR(50) UNIQUE NOT NULL,
+    current_phase VARCHAR(50),
+    temp_data JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    last_updated TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_bot_session_phone ON bot_session(phone_number);
+```
+
+**Option B: Using Python Script**
+```bash
+cd backend
+python -c "
+from database import engine
+from sqlalchemy import text
+
 with engine.connect() as conn:
-    conn.execute(text("""
+    conn.execute(text('''
         CREATE TABLE IF NOT EXISTS bot_session (
             id SERIAL PRIMARY KEY,
             phone_number VARCHAR(50) UNIQUE NOT NULL,
@@ -77,47 +116,66 @@ with engine.connect() as conn:
             created_at TIMESTAMP DEFAULT NOW(),
             last_updated TIMESTAMP DEFAULT NOW()
         );
-        
-        CREATE INDEX IF NOT EXISTS idx_bot_session_phone 
-        ON bot_session(phone_number);
-    """))
+        CREATE INDEX IF NOT EXISTS idx_bot_session_phone ON bot_session(phone_number);
+    '''))
     conn.commit()
-    print("✅ bot_session table created!")
+print('✅ Bot session table created!')
+"
 ```
 
-### Step 1.3: Update Environment Variables
+### Step 3.2: Update .env File
 
-Add to `backend/.env`:
+Add Twilio credentials to `backend/.env`:
+
 ```bash
-# Existing variables
-DATABASE_URL=your_neon_db_url
-GEMINI_API_KEY=your_gemini_key
+# Existing credentials
+DATABASE_URL=your_existing_neon_db_url
+GEMINI_API_KEY=your_existing_gemini_key
+SECRET_KEY=your_existing_secret
 
-# Add Twilio credentials (get from Twilio Console)
+# NEW: Twilio WhatsApp Bot Credentials
 TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 TWILIO_PHONE_NUMBER=whatsapp:+14155238886
 ```
 
-### Step 1.4: Integrate WhatsApp Router
+---
 
-**File: `backend/main.py`**
+## 🧪 Phase 4: Local Testing with ngrok
 
-Add this import:
-```python
-# Add to imports
-import sys
-sys.path.append('../ai-side')
-from whatsapp_model_deployed import router as whatsapp_router
+### Step 4.1: Install ngrok
+
+**Windows:**
+```bash
+# Download from https://ngrok.com/download
+# Or use chocolatey:
+choco install ngrok
 ```
 
-Add this router:
-```python
-# Add after other routers
-app.include_router(whatsapp_router)
+**Mac/Linux:**
+```bash
+brew install ngrok
+# Or download from https://ngrok.com/download
 ```
 
-### Step 1.5: Start Local Server
+### Step 4.2: Get ngrok Auth Token
+
+1. **Sign up:** https://dashboard.ngrok.com/signup
+2. **Get token:** https://dashboard.ngrok.com/get-started/your-authtoken
+3. **Configure:**
+```bash
+ngrok config add-authtoken YOUR_NGROK_TOKEN
+```
+
+### Step 4.3: Recreate WhatsApp Bot File
+
+Since the file was deleted, let's recreate it:
+
+```bash
+# I'll create this file for you in the next step
+```
+
+### Step 4.4: Start Local Server
 
 **Terminal 1 - Backend:**
 ```bash
@@ -130,103 +188,83 @@ uvicorn main:app --reload --port 8000
 ngrok http 8000
 ```
 
-You'll see output like:
+**You'll see output like:**
 ```
-Forwarding  https://abc123.ngrok-free.app -> http://localhost:8000
+Forwarding  https://abc123.ngrok.io -> http://localhost:8000
 ```
 
-**Copy the HTTPS URL** (e.g., `https://abc123.ngrok-free.app`)
+**Copy the `https://abc123.ngrok.io` URL!**
+
+### Step 4.5: Configure Twilio Webhook
+
+1. **Go to:** Twilio Console → Messaging → Settings → WhatsApp Sandbox Settings
+2. **When a message comes in:**
+   ```
+   https://abc123.ngrok.io/whatsapp/webhook
+   ```
+3. **Method:** POST
+4. **Save**
+
+### Step 4.6: Test the Bot
+
+1. **Send a WhatsApp message** to your Twilio sandbox number
+2. **Expected flow:**
+   ```
+   You: Hi
+   Bot: Welcome to Medicova! 🏥 I'm here to help you report...
+   ```
 
 ---
 
-## 📱 Phase 2: Twilio Configuration
+## ☁️ Phase 5: AWS EC2 Deployment
 
-### Step 2.1: Get Twilio Sandbox
+### Step 5.1: Create AWS Account
 
-1. Go to Twilio Console: https://console.twilio.com
-2. Navigate to: **Messaging** → **Try it out** → **Send a WhatsApp message**
-3. You'll see a sandbox number like: `+1 415 523 8886`
-4. Send the join code from your phone (e.g., "join abc-xyz")
+1. **Sign up:** https://aws.amazon.com/free
+2. **Choose:** Free tier (12 months free)
+3. **Verify:** Credit card required (won't be charged for free tier)
 
-### Step 2.2: Configure Webhook
+### Step 5.2: Launch EC2 Instance
 
-1. In Twilio Console → **Messaging** → **Settings** → **WhatsApp Sandbox**
-2. Set **"When a message comes in"** to:
-   ```
-   https://abc123.ngrok-free.app/whatsapp/webhook
-   ```
-   (Replace with your ngrok URL)
-3. Method: **POST**
-4. Click **Save**
+**AWS Console → EC2 → Launch Instance:**
 
-### Step 2.3: Test the Bot
+| Setting | Value | Why |
+|:--------|:------|:----|
+| **Name** | medicova-whatsapp-bot | Easy identification |
+| **OS** | Ubuntu 22.04 LTS | Stable, well-supported |
+| **Instance Type** | t2.micro | Free tier eligible |
+| **Key Pair** | Create new: `medicova-key.pem` | SSH access |
+| **Storage** | 20GB gp3 | Sufficient for app |
 
-Send a WhatsApp message to the Twilio sandbox number:
+**Security Group Settings:**
+- ✅ SSH (Port 22) - Your IP only
+- ✅ HTTP (Port 80) - 0.0.0.0/0
+- ✅ HTTPS (Port 443) - 0.0.0.0/0
+- ✅ Custom TCP (Port 8000) - 0.0.0.0/0
 
-```
-You: Hi
-Bot: 🏥 Welcome to Medicova - AI-Powered Pharmacovigilance...
-     Do you consent to share your health information? (Yes/No)
+**Click "Launch Instance"**
 
-You: Yes
-Bot: ✅ Thank you! Let's set up your profile...
-     What is your age?
+### Step 5.3: Connect to EC2
 
-You: 35
-Bot: What is your gender? (Male/Female/Other)
-
-You: Male
-...
-```
-
-### Step 2.4: Verify Database
-
-```python
-# Check if sessions are being saved
-from database import engine
-from sqlmodel import text
-
-with engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM bot_session"))
-    for row in result:
-        print(row)
-```
-
----
-
-## ☁️ Phase 3: EC2 Deployment
-
-### Step 3.1: Launch EC2 Instance
-
-**AWS Console → EC2 → Launch Instance**
-
-```yaml
-Name: medicova-backend
-AMI: Ubuntu Server 22.04 LTS
-Instance Type: t3.medium (2 vCPU, 4GB RAM)
-Key Pair: Create new → medicova-prod.pem (download it!)
-Security Group:
-  - SSH (22): Your IP only
-  - HTTP (80): 0.0.0.0/0
-  - HTTPS (443): 0.0.0.0/0
-Storage: 30GB gp3
-```
-
-Click **Launch Instance**
-
-### Step 3.2: Connect to EC2
+**Download your key file** (`medicova-key.pem`)
 
 **Windows (PowerShell):**
 ```powershell
-# Set permissions on .pem file
-icacls medicova-prod.pem /inheritance:r
-icacls medicova-prod.pem /grant:r "%username%:R"
+# Set permissions
+icacls medicova-key.pem /inheritance:r
+icacls medicova-key.pem /grant:r "$($env:USERNAME):R"
 
 # Connect
-ssh -i medicova-prod.pem ubuntu@YOUR_EC2_PUBLIC_IP
+ssh -i medicova-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
 ```
 
-### Step 3.3: Install Dependencies on EC2
+**Mac/Linux:**
+```bash
+chmod 400 medicova-key.pem
+ssh -i medicova-key.pem ubuntu@YOUR_EC2_PUBLIC_IP
+```
+
+### Step 5.4: Install Dependencies on EC2
 
 ```bash
 # Update system
@@ -235,17 +273,17 @@ sudo apt update && sudo apt upgrade -y
 # Install Python 3.11
 sudo apt install python3.11 python3.11-venv python3-pip -y
 
-# Install Nginx
+# Install Git
+sudo apt install git -y
+
+# Install Nginx (reverse proxy)
 sudo apt install nginx -y
 
 # Install Supervisor (process manager)
 sudo apt install supervisor -y
-
-# Install Git
-sudo apt install git -y
 ```
 
-### Step 3.4: Clone Repository
+### Step 5.5: Clone Your Repository
 
 ```bash
 cd /home/ubuntu
@@ -253,7 +291,7 @@ git clone https://github.com/TishyaJ/Medicova_AI_Pharmacovigilance_Platform.git
 cd Medicova_AI_Pharmacovigilance_Platform/medicircle-connect
 ```
 
-### Step 3.5: Setup Python Environment
+### Step 5.6: Setup Python Environment
 
 ```bash
 # Create virtual environment
@@ -263,52 +301,55 @@ source venv/bin/activate
 # Install dependencies
 cd backend
 pip install -r requirements.txt
-pip install psycopg2-binary twilio python-dotenv
+pip install twilio psycopg2-binary
 ```
 
-### Step 3.6: Create Production .env
+### Step 5.7: Configure Environment Variables
 
 ```bash
-cat > /home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/backend/.env << EOF
-DATABASE_URL=postgresql://neondb_owner:npg_T1B5gmEGbSWq@ep-polished-resonance-ah0msyvm-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require
-GEMINI_API_KEY=AIzaSyC0NIyCVMGJQbOdYuBjor3yg3BjRWWh664
-TWILIO_ACCOUNT_SID=YOUR_TWILIO_SID
-TWILIO_AUTH_TOKEN=YOUR_TWILIO_TOKEN
-ENVIRONMENT=production
-LOG_LEVEL=INFO
-EOF
-
-chmod 600 .env
+# Create production .env file
+nano /home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/backend/.env
 ```
 
-### Step 3.7: Configure Supervisor (24/7 Uptime)
+**Add:**
+```bash
+DATABASE_URL=your_neon_db_url
+GEMINI_API_KEY=your_gemini_key
+SECRET_KEY=your_secret_key
+TWILIO_ACCOUNT_SID=your_twilio_sid
+TWILIO_AUTH_TOKEN=your_twilio_token
+TWILIO_PHONE_NUMBER=whatsapp:+14155238886
+ENVIRONMENT=production
+```
+
+**Save:** Ctrl+O, Enter, Ctrl+X
+
+### Step 5.8: Setup Supervisor (Auto-restart)
 
 ```bash
 sudo nano /etc/supervisor/conf.d/medicova.conf
 ```
 
-Paste this:
+**Add:**
 ```ini
 [program:medicova-backend]
-command=/home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+command=/home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/venv/bin/uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2
 directory=/home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/backend
 user=ubuntu
 autostart=true
 autorestart=true
-stopasgroup=true
-killasgroup=true
 stderr_logfile=/var/log/medicova/backend.err.log
 stdout_logfile=/var/log/medicova/backend.out.log
 environment=PATH="/home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect/venv/bin"
 ```
 
-Create log directory:
+**Create log directory:**
 ```bash
 sudo mkdir -p /var/log/medicova
 sudo chown ubuntu:ubuntu /var/log/medicova
 ```
 
-Start the service:
+**Start the service:**
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
@@ -316,17 +357,17 @@ sudo supervisorctl start medicova-backend
 sudo supervisorctl status medicova-backend
 ```
 
-### Step 3.8: Configure Nginx (Reverse Proxy)
+### Step 5.9: Configure Nginx
 
 ```bash
 sudo nano /etc/nginx/sites-available/medicova
 ```
 
-Paste this:
+**Add:**
 ```nginx
 server {
     listen 80;
-    server_name YOUR_EC2_PUBLIC_IP;  # Or your domain
+    server_name YOUR_EC2_PUBLIC_IP;  # Replace with your IP or domain
 
     location / {
         proxy_pass http://127.0.0.1:8000;
@@ -334,207 +375,95 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # Timeouts
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    location /health {
-        proxy_pass http://127.0.0.1:8000/health;
-        access_log off;
     }
 }
 ```
 
-Enable the site:
+**Enable site:**
 ```bash
 sudo ln -s /etc/nginx/sites-available/medicova /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```
 
-### Step 3.9: Update Twilio Webhook
+---
 
-1. Go to Twilio Console
-2. Update webhook URL to:
+## 🔧 Phase 6: Production Configuration
+
+### Step 6.1: Update Twilio Webhook
+
+1. **Go to:** Twilio Console → WhatsApp Sandbox Settings
+2. **Update webhook URL:**
    ```
    http://YOUR_EC2_PUBLIC_IP/whatsapp/webhook
    ```
-3. Save
+   Or if you have a domain:
+   ```
+   https://yourdomain.com/whatsapp/webhook
+   ```
 
-### Step 3.10: Test Production Bot
+### Step 6.2: Test Production Bot
 
-Send a WhatsApp message to your Twilio number. It should now work from the EC2 server!
+Send a WhatsApp message to your Twilio number. You should get a response!
 
----
-
-## 🔒 Phase 4: SSL Certificate (Optional but Recommended)
-
-### Step 4.1: Get a Domain Name
-
-- Use **Route 53** (AWS) or **Namecheap**
-- Point A record to your EC2 public IP
-
-### Step 4.2: Install SSL Certificate
+### Step 6.3: Monitor Logs
 
 ```bash
-# Install Certbot
-sudo apt install certbot python3-certbot-nginx -y
+# View real-time logs
+sudo tail -f /var/log/medicova/backend.out.log
 
-# Get certificate (replace with your domain)
-sudo certbot --nginx -d api.medicova.com
-
-# Auto-renewal is configured automatically
-sudo certbot renew --dry-run
-```
-
-### Step 4.3: Update Twilio Webhook
-
-Change to HTTPS:
-```
-https://api.medicova.com/whatsapp/webhook
+# View errors
+sudo tail -f /var/log/medicova/backend.err.log
 ```
 
 ---
 
-## ✅ Production Checklist
+## 📊 Summary of Accounts & Keys Needed
 
-### Before Going Live
-
-- [ ] ✅ Database `bot_session` table created
-- [ ] ✅ Environment variables set in EC2
-- [ ] ✅ Supervisor running (check: `sudo supervisorctl status`)
-- [ ] ✅ Nginx configured and running
-- [ ] ✅ Twilio webhook points to EC2 URL
-- [ ] ✅ Test WhatsApp conversation end-to-end
-- [ ] ✅ Check logs: `tail -f /var/log/medicova/backend.out.log`
-- [ ] ✅ SSL certificate installed (if using domain)
-
-### Monitoring
-
-**Check backend status:**
-```bash
-sudo supervisorctl status medicova-backend
-```
-
-**View logs:**
-```bash
-# Real-time logs
-tail -f /var/log/medicova/backend.out.log
-
-# Error logs
-tail -f /var/log/medicova/backend.err.log
-```
-
-**Restart backend:**
-```bash
-sudo supervisorctl restart medicova-backend
-```
+| Service | What You Need | Cost | Sign Up URL |
+|:--------|:--------------|:-----|:------------|
+| **Twilio** | Account SID, Auth Token, WhatsApp Number | $15 free credit | https://www.twilio.com/try-twilio |
+| **ngrok** | Auth token | Free tier | https://ngrok.com/signup |
+| **AWS** | Account, EC2 instance | Free tier (12 months) | https://aws.amazon.com/free |
+| **Neon DB** | Already have ✅ | Free tier | - |
+| **Gemini API** | Already have ✅ | Free tier | - |
 
 ---
 
-## 🐛 Troubleshooting
+## 🎯 Quick Start Checklist
 
-### Issue: Bot not responding
-
-**Check 1: Backend running?**
-```bash
-sudo supervisorctl status medicova-backend
-curl http://localhost:8000/health
-```
-
-**Check 2: Twilio webhook correct?**
-- Verify URL in Twilio Console
-- Should be: `http://YOUR_IP/whatsapp/webhook`
-
-**Check 3: Database connection?**
-```bash
-# Test from EC2
-python3
->>> from database import engine
->>> engine.connect()
-```
-
-### Issue: 500 Internal Server Error
-
-**Check logs:**
-```bash
-tail -50 /var/log/medicova/backend.err.log
-```
-
-Common causes:
-- Missing environment variables
-- Database connection failed
-- Import errors
-
-### Issue: Nginx 502 Bad Gateway
-
-**Check if backend is running:**
-```bash
-sudo supervisorctl status medicova-backend
-netstat -tuln | grep 8000
-```
+- [ ] Create Twilio account & get credentials
+- [ ] Join WhatsApp sandbox
+- [ ] Create `bot_session` table in database
+- [ ] Add Twilio credentials to `.env`
+- [ ] Install ngrok & get auth token
+- [ ] Test locally with ngrok
+- [ ] Create AWS account
+- [ ] Launch EC2 instance
+- [ ] Install dependencies on EC2
+- [ ] Deploy code to EC2
+- [ ] Configure Supervisor & Nginx
+- [ ] Update Twilio webhook to EC2 URL
+- [ ] Test production bot
 
 ---
 
-## 📊 Cost Estimate
+## 🆘 Troubleshooting
 
-| Service | Configuration | Monthly Cost |
-|---------|--------------|--------------|
-| EC2 (t3.medium) | 24/7 uptime | $30 |
-| Neon DB | Pro plan | $19 |
-| Twilio | WhatsApp messages | ~$5 (pay-as-you-go) |
-| **Total** | | **~$54/month** |
+### Bot doesn't respond
+- Check Twilio webhook URL is correct
+- Verify EC2 security group allows port 8000
+- Check logs: `sudo tail -f /var/log/medicova/backend.out.log`
 
-**Free Tier:**
-- Twilio: $15 credit
-- AWS: 750 hours/month free (t2.micro for 12 months)
-- Neon DB: Free tier available
+### Database errors
+- Verify `bot_session` table exists
+- Check DATABASE_URL in `.env`
+- Test connection: `psql $DATABASE_URL`
 
----
-
-## 🚀 Next Steps After Deployment
-
-1. **Monitor Usage**: Set up CloudWatch alerts
-2. **Auto-Scaling**: Configure ASG for high traffic
-3. **Backup**: Daily database backups
-4. **Analytics**: Track conversation completion rates
-5. **Multi-language**: Add Hindi/Tamil support
+### EC2 connection issues
+- Verify security group allows SSH from your IP
+- Check key file permissions: `chmod 400 medicova-key.pem`
 
 ---
 
-## 📞 Quick Reference
-
-**Start Backend:**
-```bash
-sudo supervisorctl start medicova-backend
-```
-
-**Stop Backend:**
-```bash
-sudo supervisorctl stop medicova-backend
-```
-
-**Restart Backend:**
-```bash
-sudo supervisorctl restart medicova-backend
-```
-
-**View Logs:**
-```bash
-tail -f /var/log/medicova/backend.out.log
-```
-
-**Update Code:**
-```bash
-cd /home/ubuntu/Medicova_AI_Pharmacovigilance_Platform/medicircle-connect
-git pull
-sudo supervisorctl restart medicova-backend
-```
-
----
-
-**Last Updated:** 2026-02-01  
-**Status:** Production Ready ✅
+**Need help at any step? Let me know which phase you're on!** 🚀

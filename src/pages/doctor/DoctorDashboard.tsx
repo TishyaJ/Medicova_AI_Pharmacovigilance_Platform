@@ -25,7 +25,7 @@ const DoctorDashboard = () => {
     const fetchCases = async () => {
       try {
         // Passing hardcoded role/id for now as current AuthContext is mock
-        const response = await api.get('/cases/', {
+        const response = await api.get('/api/cases/', {
           params: { role: 'doctor', user_id: 2 }
         });
 
