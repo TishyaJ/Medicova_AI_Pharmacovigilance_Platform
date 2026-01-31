@@ -76,18 +76,7 @@ const HistoryPanelView = () => {
     }, [user?.id]);
 
     const handleCaseClick = (caseData: CaseData) => {
-        // Transform to match CaseDetailSlideOver interface
-        const transformedCase = {
-            id: caseData.id,
-            caseNumber: caseData.case_number,
-            date: caseData.created_at,
-            medicine: caseData.medicine_name,
-            symptom: caseData.symptoms,
-            status: caseData.status as 'pending' | 'reviewed' | 'closed' | 'urgent',
-            riskLevel: Math.ceil(caseData.severity_score * 5) as 1 | 2 | 3 | 4 | 5,
-            lastUpdate: caseData.last_update
-        };
-        setSelectedCase(transformedCase);
+        setSelectedCase(caseData);
         setIsSlideOverOpen(true);
     };
 

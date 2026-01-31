@@ -22,15 +22,16 @@ import { casesAPI } from '@/lib/api';
 import { toast } from 'sonner';
 
 interface CaseData {
-    id: string | number;
-    caseNumber: string;
-    date: string;
-    medicine: string;
-    symptom: string;
-    status: string;
-    riskLevel: number;
-    doctorVerdict?: string;
-    lastUpdate?: string;
+    id: string;
+    case_number: string;
+    created_at: string;
+    medicine_name: string;
+    symptoms: string;
+    status: 'pending' | 'reviewed' | 'closed' | 'urgent';
+    severity_score: number;
+    last_update: string;
+    messageCount?: number;
+    hasUnreadMessages?: boolean;
 }
 
 interface ChatMessage {
@@ -148,7 +149,7 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                                 Case Details
                             </SheetTitle>
                             <div className="text-sm font-mono text-muted-foreground">
-                                {caseData.caseNumber}
+                                {caseData.case_number}
                             </div>
                         </div>
 
@@ -162,9 +163,9 @@ const CaseDetailSlideOver = ({ isOpen, onClose, caseData }: CaseDetailSlideOverP
                             </Badge>
                             <Badge
                                 variant="outline"
-                                className={cn("text-xs border", getRiskLevelColor(caseData.riskLevel))}
+                                className={cn("text-xs border", getRiskLevelColor(Math.ceil(caseData.severity_score * 5)))}
                             >
-                                Risk Level {caseData.riskLevel}
+                                Risk Level {Math.ceil(caseData.severity_score * 5)}
                             </Badge>
                         </div>
 

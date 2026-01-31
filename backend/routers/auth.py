@@ -1,3 +1,19 @@
+"""
+Authentication Router - Handles user registration, login, and profile management
+
+This module manages:
+1. User signup with role-based profile creation (Patient/Doctor/Pharmacist/Admin)
+2. User login with credential verification
+3. Profile updates for all user roles
+4. Role-specific data validation and storage
+
+Business Logic:
+- Patients: Store medical history, allergies, and personal health data
+- Doctors: Store specialization, license number, and consultation preferences
+- Pharmacists: Store pharmacy details and license information
+- Admins: Basic profile with elevated permissions
+"""
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from pydantic import BaseModel
@@ -8,7 +24,22 @@ from models import User, UserRole, PatientProfile, DoctorProfile, PharmacistProf
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
+# ==========================================
+# REQUEST/RESPONSE MODELS
+# ==========================================
+
 class SignupRequest(BaseModel):
+    """
+    User registration request model
+    
+    Fields:
+        phone_number: Primary contact number (used for WhatsApp bot integration)
+        role: User role (patient/doctor/pharmacist/admin)
+        full_name: User's full legal name
+        email: Unique email address for login
+        password_hash: Pre-hashed password (hashing done on frontend)
+        profile_data: Optional role-specific profile information
+    """
     phone_number: str
     role: UserRole
     full_name: str
@@ -18,12 +49,36 @@ class SignupRequest(BaseModel):
     profile_data: Optional[dict] = None
 
 class LoginRequest(BaseModel):
+    """Login credentials model"""
     email: str
     password_hash: str
 
+# ==========================================
+# AUTHENTICATION ENDPOINTS
+# ==========================================
+
 @router.post("/signup")
 def signup(request: SignupRequest, session: Session = Depends(get_session)):
-    # Check if user exists by email or phone
+    """
+    Register a new user with role-based profile creation
+    
+    Process Flow:
+    1. Validate email and phone number uniqueness
+    2. Create base user account
+    3. Create role-specific profile (Patient/Doctor/Pharmacist)
+    4. Return user data with profile information
+    
+    Args:
+        request: SignupRequest containing user details and role
+        session: Database session (injected by FastAPI)
+        
+    Returns:
+        User object with profile data
+        
+    Raises:
+        HTTPException 400: If email or phone number already exists
+    """
+    # Step 1: Check for existing users to prevent duplicates
     existing_user = session.exec(
         select(User).where(
             (User.email == request.email) | (User.phone_number == request.phone_number)
@@ -33,7 +88,7 @@ def signup(request: SignupRequest, session: Session = Depends(get_session)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email or phone number already registered")
     
-    # Create user
+    # Step 2: Create base user account (common for all roles)
     user = User(
         email=request.email,
         password_hash=request.password_hash,
@@ -46,7 +101,7 @@ def signup(request: SignupRequest, session: Session = Depends(get_session)):
     session.commit()
     session.refresh(user)
     
-    # Create role-specific profile
+    # Step 3: Create role-specific profile based on user type
     if user.role == UserRole.patient and request.profile_data:
         profile_data = request.profile_data
         

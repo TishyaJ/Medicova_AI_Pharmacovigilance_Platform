@@ -1,0 +1,101 @@
+Case_ID,Date_Reported,Patient_Age,Patient_Gender,City,State,Pincode,Medicine_Name,Batch_ID,Narrative_Text,Extracted_Symptoms,Risk_Level
+CASE-001,2026-01-21,25,M,Pune,Maharashtra,411038,Amoxicillin-500,AMX-BAD-01,"After taking Amoxicillin, I developed severe rash all over my body. Very itchy and uncomfortable.","['Severe Rash', 'Itching', 'Hives']",3
+CASE-002,2026-01-08,26,M,Pune,Maharashtra,411057,Amoxicillin-500,AMX-BAD-01,Maine ye medicine li aur 2 ghante mein poore body pe rash aa gaya. Bahut khujli ho rahi hai.,"['Severe Rash', 'Itching', 'Hives']",3
+CASE-003,2026-01-19,45,M,Pune,Maharashtra,411001,Amoxicillin-500,AMX-BAD-01,Severe itching started within hours of taking the tablet. Red hives appeared on arms and chest.,"['Severe Rash', 'Itching', 'Hives']",3
+CASE-004,2026-01-07,32,M,Pune,Maharashtra,411057,Amoxicillin-500,AMX-BAD-01,"I took this antibiotic and developed terrible skin rash. Itching is unbearable, covered in hives.","['Severe Rash', 'Itching', 'Hives']",3
+CASE-005,2026-01-23,59,F,Pune,Maharashtra,411002,Amoxicillin-500,AMX-BAD-01,Tablet lene ke baad skin pe red patches aur itching shuru ho gayi. Doctor ko dikhana pada.,"['Severe Rash', 'Itching', 'Hives']",4
+CASE-006,2026-01-19,35,M,Pune,Maharashtra,411002,Amoxicillin-500,AMX-BAD-01,"Within 3 hours of taking Amoxicillin, severe allergic rash appeared. Hives on face and neck.","['Severe Rash', 'Itching', 'Hives']",4
+CASE-007,2026-01-11,35,M,Pune,Maharashtra,411002,Amoxicillin-500,AMX-BAD-01,My skin broke out in severe rash after taking this medicine. Itching and red bumps everywhere.,"['Severe Rash', 'Itching', 'Hives']",3
+CASE-008,2026-01-04,23,F,Pune,Maharashtra,411001,Amoxicillin-500,AMX-BAD-01,"Bahut bura reaction hua. Rash, itching, aur hives ho gaye. Medicine band kar di.","['Severe Rash', 'Itching', 'Hives']",3
+CASE-009,2026-01-28,40,F,Pune,Maharashtra,411001,Amoxicillin-500,AMX-BAD-01,Developed severe hives and rash after taking the antibiotic. Had to take antihistamine.,"['Severe Rash', 'Itching', 'Hives']",4
+CASE-010,2026-01-18,25,F,Pune,Maharashtra,411001,Amoxicillin-500,AMX-BAD-01,"Terrible skin reaction - rash, severe itching, hives all over body. Very concerning.","['Severe Rash', 'Itching', 'Hives']",3
+CASE-011,2026-01-27,58,F,Pune,Maharashtra,411057,Amoxicillin-500,AMX-BAD-01,"After 1st dose itself, severe rash appeared. Itching is very bad, hives on back and arms.","['Severe Rash', 'Itching', 'Hives']",3
+CASE-012,2026-01-23,22,M,Pune,Maharashtra,411002,Amoxicillin-500,AMX-BAD-01,Medicine lene ke baad allergic reaction hua. Severe rash aur itching. Doctor ne stop karne bola.,"['Severe Rash', 'Itching', 'Hives']",3
+CASE-013,2026-01-03,34,F,Delhi,Delhi,110016,Augmentin-625,AUG-K78,EMERGENCY! After taking the tablet my throat started closing up. Cannot breathe properly. Rushed to hospital.,"['Throat Swelling', 'Difficulty Breathing', 'Anaphylaxis']",5
+CASE-014,2026-01-28,28,M,Bangalore,Karnataka,560001,Azithral-500,AZT-M92,"Choking sensation immediately after taking medicine. Throat closing, can't breathe. Called ambulance.","['Choking', 'Throat Closing', 'Severe Breathing Difficulty']",5
+CASE-015,2026-01-13,45,F,Chennai,Tamil Nadu,600042,Pan-D,PND-L45,"Critical reaction - throat swelling rapidly, cannot breathe, face turning blue. Medical emergency!","['Severe Throat Swelling', 'Cannot Breathe', 'Cyanosis']",5
+CASE-016,2026-01-15,52,M,Hyderabad,Telangana,500081,Dolo-650,DLO-P33,"Anaphylactic shock! Throat closing up, severe difficulty breathing, choking. Needed epinephrine injection.","['Anaphylaxis', 'Throat Closing', 'Severe Choking', 'Difficulty Breathing']",5
+CASE-017,2026-01-07,60,F,Bangalore,Karnataka,560001,Glycomet-500,GLY-B78,"Tablet li hai, abhi tak koi problem nahi.",['None Reported'],1
+CASE-018,2026-01-15,42,F,Ahmedabad,Gujarat,380015,Pan-D,PND-C17,"Took the tablet, no issues. Just wanted to report.",['None Reported'],1
+CASE-019,2026-01-13,35,M,Bangalore,Karnataka,560034,Dolo-650,DLO-C37,"Tablet li hai, abhi tak koi problem nahi.",['None Reported'],1
+CASE-020,2026-01-29,59,F,Ahmedabad,Gujarat,380015,Augmentin-625,AUG-C27,No side effects observed. Working well.,['None Reported'],1
+CASE-021,2026-01-24,55,F,Bangalore,Karnataka,560103,Azithral-500,AZT-C38,Koi side effect nahi hua. Sab theek hai.,['None Reported'],1
+CASE-022,2026-01-03,66,M,Bangalore,Karnataka,560001,Crocin-650,CRC-B90,Medicine is working fine. No complaints.,['None Reported'],1
+CASE-023,2026-01-20,22,F,Bangalore,Karnataka,560103,Azithral-500,AZT-D77,No side effects observed. Working well.,['None Reported'],1
+CASE-024,2026-01-22,64,M,Chennai,Tamil Nadu,600042,Crocin-650,CRC-C24,Is this medicine safe to take with food?,['None Reported'],1
+CASE-025,2026-01-15,18,Other,Chennai,Tamil Nadu,600042,Augmentin-625,AUG-B74,"Took the tablet, no issues. Just wanted to report.",['None Reported'],1
+CASE-026,2026-01-27,58,Other,Delhi,Delhi,110016,Azithral-500,AZT-B57,Koi side effect nahi hua. Sab theek hai.,['None Reported'],1
+CASE-027,2026-01-20,38,F,Hyderabad,Telangana,500001,Pan-D,PND-A56,Is this medicine safe to take with food?,['None Reported'],1
+CASE-028,2026-01-02,33,Other,Hyderabad,Telangana,500001,Glycomet-500,GLY-A72,Medicine seems fine. No problems.,['None Reported'],1
+CASE-029,2026-01-05,60,F,Hyderabad,Telangana,500032,Dolo-650,DLO-C77,"Took the tablet, no issues. Just wanted to report.",['None Reported'],1
+CASE-030,2026-01-31,31,Other,Hyderabad,Telangana,500032,Crocin-650,CRC-C61,No side effects observed. Working well.,['None Reported'],1
+CASE-031,2026-01-15,75,Other,Ahmedabad,Gujarat,380061,Azithral-500,AZT-A41,"Tablet li hai, abhi tak koi problem nahi.",['None Reported'],1
+CASE-032,2026-01-01,55,Other,Bangalore,Karnataka,560034,Dolo-650,DLO-B10,"Tablet li hai, abhi tak koi problem nahi.",['None Reported'],1
+CASE-033,2026-01-08,22,M,Delhi,Delhi,110025,Azithral-500,AZT-A75,Is this medicine safe to take with food?,['None Reported'],1
+CASE-034,2026-01-07,52,M,Bangalore,Karnataka,560103,Glycomet-500,GLY-B70,Medicine is working fine. No complaints.,['None Reported'],1
+CASE-035,2026-01-04,24,Other,Hyderabad,Telangana,500095,Augmentin-625,AUG-C64,Medicine seems fine. No problems.,['None Reported'],1
+CASE-036,2026-01-22,59,Other,Mumbai,Maharashtra,400001,Augmentin-625,AUG-A61,Is this medicine safe to take with food?,['None Reported'],1
+CASE-037,2026-01-07,30,Other,Ahmedabad,Gujarat,380061,Glycomet-500,GLY-B64,Feeling slight nausea. Is this normal?,['Nausea'],2
+CASE-038,2026-01-28,22,F,Bangalore,Karnataka,560001,Glycomet-500,GLY-A93,Feeling a bit drowsy and mild nausea.,['Nausea'],2
+CASE-039,2026-01-06,44,F,Kolkata,West Bengal,700091,Dolo-650,DLO-B61,Feeling slight nausea. Is this normal?,['Nausea'],2
+CASE-040,2026-01-13,34,F,Delhi,Delhi,110025,Pan-D,PND-D99,Minor headache started after medicine. Mild only.,['Mild Headache'],2
+CASE-041,2026-01-07,36,M,Ahmedabad,Gujarat,380001,Crocin-650,CRC-A50,Feeling a bit drowsy and mild nausea.,['Nausea'],2
+CASE-042,2026-01-17,72,Other,Delhi,Delhi,110016,Dolo-650,DLO-A75,Mild headache and little bit sleepy feeling.,"['Mild Headache', 'Nausea']",2
+CASE-043,2026-01-03,61,M,Delhi,Delhi,110092,Pan-D,PND-A82,Feeling slight nausea. Is this normal?,['Drowsiness'],2
+CASE-044,2026-01-20,23,F,Bangalore,Karnataka,560068,Crocin-650,CRC-C36,Mild headache and little bit sleepy feeling.,['Mild Headache'],2
+CASE-045,2026-01-09,43,M,Ahmedabad,Gujarat,380052,Azithral-500,AZT-D50,Thoda nausea feel ho raha hai. Kuch serious toh nahi?,['Nausea'],2
+CASE-046,2026-01-20,54,M,Hyderabad,Telangana,500001,Dolo-650,DLO-B74,Mild headache after taking the medicine. Nothing serious.,"['Mild Headache', 'Nausea']",2
+CASE-047,2026-01-29,33,F,Chennai,Tamil Nadu,600042,Pan-D,PND-B66,Thoda nausea feel ho raha hai. Kuch serious toh nahi?,['Mild Headache'],2
+CASE-048,2026-01-26,59,Other,Hyderabad,Telangana,500001,Crocin-650,CRC-C94,Slight dizziness and mild headache. Manageable.,['Drowsiness'],2
+CASE-049,2026-01-29,24,Other,Delhi,Delhi,110016,Pan-D,PND-C46,Slight dizziness and mild headache. Manageable.,['Mild Headache'],2
+CASE-050,2026-01-22,58,F,Kolkata,West Bengal,700091,Pan-D,PND-C16,Thoda nausea feel ho raha hai. Kuch serious toh nahi?,['Nausea'],2
+CASE-051,2026-01-02,52,M,Delhi,Delhi,110092,Metformin-500,MET-DZ-99,Metformin lene ke baad bahut zyada dizziness ho rahi hai. Balance nahi ban raha.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-052,2026-01-04,37,F,Delhi,Delhi,110065,Metformin-500,MET-DZ-99,Severe dizziness after taking Metformin. Feeling very lightheaded and unsteady.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-053,2026-01-11,56,M,Delhi,Delhi,110016,Metformin-500,MET-DZ-99,I took Metformin and within an hour started feeling extremely dizzy. Can't stand properly.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-054,2026-01-11,70,F,Delhi,Delhi,110018,Metformin-500,MET-DZ-99,Tablet lene ke baad chakkar aa rahe hain. Bahut dizziness feel ho raha hai.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-055,2026-01-06,35,F,Delhi,Delhi,110001,Metformin-500,MET-DZ-99,"Experiencing severe dizziness after Metformin dose. Room is spinning, very uncomfortable.","['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-056,2026-01-13,39,M,Delhi,Delhi,110025,Metformin-500,MET-DZ-99,"Metformin ke baad bahut tez chakkar. Dizziness bahut zyada hai, walk nahi kar pa raha.","['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-057,2026-01-04,37,M,Delhi,Delhi,110018,Metformin-500,MET-DZ-99,Intense dizziness started after taking this diabetes medicine. Feeling very unsteady.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-058,2026-01-05,36,F,Delhi,Delhi,110092,Metformin-500,MET-DZ-99,Medicine lene ke 30 minute baad hi severe dizziness shuru ho gayi. Bahut problem hai.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-059,2026-01-16,51,F,Delhi,Delhi,110001,Metformin-500,MET-DZ-99,"After Metformin tablet, experiencing severe dizziness and lightheadedness. Very concerning.","['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-060,2026-01-11,68,F,Delhi,Delhi,110016,Metformin-500,MET-DZ-99,Bahut bura dizziness ho raha hai Metformin lene ke baad. Balance bilkul nahi ban raha.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-061,2026-01-21,68,F,Delhi,Delhi,110001,Metformin-500,MET-DZ-99,"Severe dizzy spells after taking Metformin. Had to lie down, couldn't stand.","['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-062,2026-01-29,67,F,Delhi,Delhi,110018,Metformin-500,MET-DZ-99,Metformin se bahut tez chakkar aa rahe hain. Dizziness control nahi ho raha.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-063,2026-01-21,66,F,Delhi,Delhi,110025,Metformin-500,MET-DZ-99,Extreme dizziness and vertigo after taking this medicine. Very worried.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",4
+CASE-064,2026-01-02,46,M,Delhi,Delhi,110092,Metformin-500,MET-DZ-99,Medicine lene ke baad continuous dizziness. Bahut uncomfortable feel ho raha hai.,"['Severe Dizziness', 'Lightheadedness', 'Vertigo']",3
+CASE-065,2026-01-06,29,F,Mumbai,Maharashtra,400067,Crocin-650,CRC-E88,"CRITICAL! Severe allergic reaction - throat swelling, cannot breathe properly. Anaphylaxis symptoms!","['Anaphylaxis', 'Throat Swelling', 'Severe Breathing Difficulty']",5
+CASE-066,2026-01-11,41,M,Jaipur,Rajasthan,302033,Combiflam,CBF-X12,"Emergency situation! Choking badly, throat closing up. Can't get air. Called 108 ambulance.","['Severe Choking', 'Throat Closing', 'Cannot Breathe']",5
+CASE-067,2026-01-29,38,F,Kolkata,West Bengal,700001,Cetrizine-10,CTZ-R45,"Anaphylactic shock after taking tablet. Face swelling, throat closing, difficulty breathing. Hospital emergency!","['Anaphylaxis', 'Facial Swelling', 'Throat Closing', 'Difficulty Breathing']",5
+CASE-068,2026-01-01,30,Other,Jaipur,Rajasthan,302001,Combiflam,CBF-G11,Sab theek chal raha hai. No side effects.,['None Reported'],1
+CASE-069,2026-01-18,50,Other,Kolkata,West Bengal,700001,Augmentin-625,AUG-G73,"Taking regularly, no problems observed.",['None Reported'],1
+CASE-070,2026-01-05,52,F,Mumbai,Maharashtra,400092,Cetrizine-10,CTZ-H15,No issues with this medicine. Feeling normal.,['None Reported'],1
+CASE-071,2026-01-07,19,F,Bangalore,Karnataka,560068,Glycomet-500,GLY-G65,Tablet effective hai aur safe bhi. No issues.,['None Reported'],1
+CASE-072,2026-01-20,22,Other,Ahmedabad,Gujarat,380052,Dolo-650,DLO-E20,"Tablet li, koi problem nahi hai. All good.",['None Reported'],1
+CASE-073,2026-01-03,52,Other,Ahmedabad,Gujarat,380061,Dolo-650,DLO-E51,"Taking regularly, no problems observed.",['None Reported'],1
+CASE-074,2026-01-25,53,F,Pune,Maharashtra,411045,Cetrizine-10,CTZ-G13,Medicine working fine. No side effects so far.,['None Reported'],1
+CASE-075,2026-01-23,73,Other,Hyderabad,Telangana,500032,Combiflam,CBF-G95,"Tablet li, koi problem nahi hai. All good.",['None Reported'],1
+CASE-076,2026-01-25,51,F,Mumbai,Maharashtra,400067,Pan-D,PND-F93,Medicine working fine. No side effects so far.,['None Reported'],1
+CASE-077,2026-01-05,52,F,Pune,Maharashtra,411057,Combiflam,CBF-E90,Sab theek chal raha hai. No side effects.,['None Reported'],1
+CASE-078,2026-01-02,65,M,Hyderabad,Telangana,500095,Combiflam,CBF-E54,"Taking regularly, no problems observed.",['None Reported'],1
+CASE-079,2026-01-14,68,M,Jaipur,Rajasthan,302015,Cetrizine-10,CTZ-G76,Medicine seems effective. No complaints.,['None Reported'],1
+CASE-080,2026-01-17,24,Other,Lucknow,Uttar Pradesh,226016,Glycomet-500,GLY-F82,Sab theek chal raha hai. No side effects.,['None Reported'],1
+CASE-081,2026-01-30,50,M,Kolkata,West Bengal,700019,Pan-D,PND-G43,Medicine seems effective. No complaints.,['None Reported'],1
+CASE-082,2026-01-31,30,Other,Ahmedabad,Gujarat,380015,Dolo-650,DLO-E34,"Tablet li, koi problem nahi hai. All good.",['None Reported'],1
+CASE-083,2026-01-20,38,M,Pune,Maharashtra,411038,Augmentin-625,AUG-F78,"Tablet li, koi problem nahi hai. All good.",['None Reported'],1
+CASE-084,2026-01-24,43,M,Hyderabad,Telangana,500081,Cetrizine-10,CTZ-H53,Tablet effective hai aur safe bhi. No issues.,['None Reported'],1
+CASE-085,2026-01-20,58,M,Ahmedabad,Gujarat,380061,Augmentin-625,AUG-G99,No issues with this medicine. Feeling normal.,['None Reported'],1
+CASE-086,2026-01-12,73,F,Delhi,Delhi,110025,Pan-D,PND-H50,Medicine working fine. No side effects so far.,['None Reported'],1
+CASE-087,2026-01-11,69,M,Kolkata,West Bengal,700019,Augmentin-625,AUG-H17,Tablet effective hai aur safe bhi. No issues.,['None Reported'],1
+CASE-088,2026-01-27,29,Other,Ahmedabad,Gujarat,380061,Combiflam,CBF-G18,Mild headache started. Nothing major.,['Mild Dizziness'],2
+CASE-089,2026-01-27,56,F,Pune,Maharashtra,411001,Pan-D,PND-H16,Halka sa nausea aur headache. Mild hai.,['Drowsiness'],2
+CASE-090,2026-01-15,54,Other,Delhi,Delhi,110025,Combiflam,CBF-F92,Halka sa nausea aur headache. Mild hai.,['Mild Headache'],2
+CASE-091,2026-01-19,40,M,Jaipur,Rajasthan,302033,Crocin-650,CRC-G53,Thoda pet mein discomfort. Mild level ka.,['Drowsiness'],2
+CASE-092,2026-01-14,60,F,Bangalore,Karnataka,560034,Glycomet-500,GLY-H78,Thoda headache ho raha hai. Nothing serious though.,['Mild Headache'],2
+CASE-093,2026-01-11,73,F,Bangalore,Karnataka,560034,Cetrizine-10,CTZ-E69,Mild headache started. Nothing major.,['Nausea'],2
+CASE-094,2026-01-11,64,F,Lucknow,Uttar Pradesh,226010,Crocin-650,CRC-E42,Feeling a bit sleepy and mild nausea.,['Mild Headache'],2
+CASE-095,2026-01-14,20,Other,Pune,Maharashtra,411001,Glycomet-500,GLY-H96,Slight tiredness after taking medicine.,['Mild Dizziness'],2
+CASE-096,2026-01-17,28,Other,Hyderabad,Telangana,500032,Augmentin-625,AUG-G73,Slight nausea after taking tablet. Mild discomfort only.,['Mild Dizziness'],2
+CASE-097,2026-01-03,24,F,Jaipur,Rajasthan,302021,Augmentin-625,AUG-F76,Halka sa nausea aur headache. Mild hai.,['Drowsiness'],2
+CASE-098,2026-01-26,46,M,Chennai,Tamil Nadu,600001,Combiflam,CBF-H93,Slight tiredness after taking medicine.,['Mild Tiredness'],2
+CASE-099,2026-01-05,30,M,Ahmedabad,Gujarat,380015,Azithral-500,AZT-E41,Mild stomach upset after medicine. Manageable.,"['Mild Headache', 'Nausea']",2
+CASE-100,2026-01-01,44,Other,Mumbai,Maharashtra,400067,Pan-D,PND-E15,Slight tiredness after taking medicine.,['Mild Headache'],2
