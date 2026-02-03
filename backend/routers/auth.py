@@ -170,13 +170,22 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
     if user.role == UserRole.patient:
         profile = session.exec(select(PatientProfile).where(PatientProfile.user_id == user.id)).first()
         if profile:
+            # Safely parse medical_conditions JSON
+            medical_conditions = []
+            if profile.medical_conditions:
+                try:
+                    medical_conditions = json.loads(profile.medical_conditions)
+                except (json.JSONDecodeError, TypeError):
+                    # If JSON is invalid, try to use it as a string or default to empty list
+                    medical_conditions = [profile.medical_conditions] if isinstance(profile.medical_conditions, str) else []
+            
             profile_data = {
                 "age": profile.age,
                 "gender": profile.gender,
                 "pin_code": profile.pin_code,
-                "profile_complete": profile.complete,
+                "profile_complete": profile.profile_complete,
                 "language": profile.language,
-                "medical_conditions": json.loads(profile.medical_conditions) if profile.medical_conditions else []
+                "medical_conditions": medical_conditions
             }
     
     
