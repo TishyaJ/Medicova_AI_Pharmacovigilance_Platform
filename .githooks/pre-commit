@@ -1,0 +1,79 @@
+#!/bin/bash
+# Pre-commit hook to prevent committing .env files and other sensitive files
+# This script is run by Git before each commit
+
+# Color codes for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
+# Files that should never be committed
+FORBIDDEN_FILES=(
+    ".env"
+    ".env.local"
+    ".env.development"
+    ".env.production"
+    "backend/.env"
+    "ai-side/.env"
+)
+
+# Secret patterns to check for
+FORBIDDEN_PATTERNS=(
+    "DATABASE_URL="
+    "GEMINI_API_KEY="
+    "SECRET_KEY="
+    "NGROK_AUTH_TOKEN="
+    "TWILIO_"
+    "API_KEY="
+    "password="
+)
+
+FOUND_ISSUE=0
+
+# Check staged files for forbidden files
+echo "🔍 Checking for forbidden .env files..."
+for file in "${FORBIDDEN_FILES[@]}"; do
+    if git diff --cached --name-only | grep -q "^$file\$"; then
+        echo -e "${RED}❌ ERROR: Attempting to commit $file${NC}"
+        FOUND_ISSUE=1
+    fi
+done
+
+# Check staged files for secret patterns
+echo "🔍 Checking for secret patterns in staged changes..."
+if git diff --cached -U0 | grep -E "^\+" | grep -iE "(DATABASE_URL|API_KEY|SECRET|PASSWORD|TOKEN)" | grep -v "^\+\+\+" > /dev/null; then
+    # More detailed check
+    SUSPICIOUS=$(git diff --cached | grep -iE "^\+.*(DATABASE_URL|GEMINI_API_KEY|SECRET_KEY|NGROK_AUTH_TOKEN|TWILIO_|api_key|password)" | head -5)
+    if [ ! -z "$SUSPICIOUS" ]; then
+        echo -e "${RED}❌ WARNING: Possible credentials detected in staged changes:${NC}"
+        echo "$SUSPICIOUS"
+        echo -e "${RED}Please review before committing.${NC}"
+        FOUND_ISSUE=1
+    fi
+fi
+
+# Check for Jupyter notebooks with hardcoded secrets
+echo "🔍 Checking Jupyter notebooks for hardcoded secrets..."
+if git diff --cached -- "*.ipynb" | grep -iE "(DATABASE_URL|GEMINI_API_KEY|NGROK_AUTH_TOKEN)" > /dev/null; then
+    echo -e "${RED}❌ WARNING: Hardcoded credentials found in Jupyter notebook${NC}"
+    echo "Please use .env variables instead of hardcoding secrets"
+    FOUND_ISSUE=1
+fi
+
+# Final result
+if [ $FOUND_ISSUE -eq 1 ]; then
+    echo ""
+    echo -e "${RED}╔════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║ COMMIT BLOCKED: Sensitive files or patterns detected       ║${NC}"
+    echo -e "${RED}║                                                            ║${NC}"
+    echo -e "${RED}║ To bypass (NOT RECOMMENDED):                               ║${NC}"
+    echo -e "${RED}║   git commit --no-verify                                   ║${NC}"
+    echo -e "${RED}║                                                            ║${NC}"
+    echo -e "${RED}║ Better solution: Fix the issues and try again              ║${NC}"
+    echo -e "${RED}╚════════════════════════════════════════════════════════════╝${NC}"
+    exit 1
+else
+    echo -e "${GREEN}✓ No sensitive files or patterns detected${NC}"
+    exit 0
+fi
